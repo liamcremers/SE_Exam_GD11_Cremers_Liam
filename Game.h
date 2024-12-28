@@ -13,16 +13,14 @@
 #include "GameEngine.h"
 #include "AbstractGame.h"
 
-//-----------------------------------------------------------------
-// Game Class																
-//-----------------------------------------------------------------
 class Game : public AbstractGame, public Callable
 {
 public:				
 	//---------------------------
 	// Constructor(s) and Destructor
 	//---------------------------
-	Game();
+	Game() = default;
+	Game(const std::string& scriptName); // Add this constructor
 
 	virtual ~Game() override;
 
@@ -50,11 +48,14 @@ public:
 	
 	void CallAction			(Caller* callerPtr)											override;
 
+	void ShowWarning(const tstring& message);
+
+	void TestLua();
+	void TestLua(const std::basic_string<TCHAR>& scriptName);
+	void WhatFile(const std::string& scriptName);
 private:
 	// -------------------------
 	// Datamembers
 	// -------------------------
-
-
-
+	std::string m_ScriptName; // Add this data member
 };

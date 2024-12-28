@@ -7,38 +7,59 @@
 // Include Files
 //-----------------------------------------------------------------
 #include "Game.h"
+extern "C" {
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
 
 //-----------------------------------------------------------------
 // Game Member Functions																				
 //-----------------------------------------------------------------
 
-Game::Game() 																	
+Game::Game(const std::string& scriptName)
+	: m_ScriptName(scriptName)
 {
 	// nothing to create
 }
 
-Game::~Game()																						
+
+Game::~Game()
 {
 	// nothing to destroy
 }
 
-void Game::Initialize()			
+void Game::Initialize()
 {
 	// Code that needs to execute (once) at the start of the game, before the game window is created
 
 	AbstractGame::Initialize();
-	GAME_ENGINE->SetTitle(_T("Game Engine version 8_01"));	
-	
+	GAME_ENGINE->SetTitle(_T("Game Engine version 8_01"));
+
 	GAME_ENGINE->SetWidth(1024);
 	GAME_ENGINE->SetHeight(768);
-    GAME_ENGINE->SetFrameRate(50);
-
+	GAME_ENGINE->SetFrameRate(50);
 	// Set the keys that the game needs to listen to
 	//tstringstream buffer;
 	//buffer << _T("KLMO");
 	//buffer << (char) VK_LEFT;
 	//buffer << (char) VK_RIGHT;
 	//GAME_ENGINE->SetKeyList(buffer.str());
+#if defined(_DEBUG)
+#if defined(_WIN64)
+	ShowWarning(_T("Running in x64 Debug mode"));
+	TestLua();
+	WhatFile(m_ScriptName);
+#else
+	ShowWarning(_T("Running in x86 Debug mode"));
+#endif
+#else
+#if defined(_WIN64)
+	ShowWarning(_T("Running in x64 Release mode"));
+#else
+	ShowWarning(_T("Running in x86 Release mode"));
+#endif
+#endif
 }
 
 void Game::Start()
@@ -62,7 +83,7 @@ void Game::Tick()
 }
 
 void Game::MouseButtonAction(bool isLeft, bool isDown, int x, int y, WPARAM wParam)
-{	
+{
 	// Insert code for a mouse button action
 
 	/* Example:
@@ -80,12 +101,12 @@ void Game::MouseButtonAction(bool isLeft, bool isDown, int x, int y, WPARAM wPar
 }
 
 void Game::MouseWheelAction(int x, int y, int distance, WPARAM wParam)
-{	
+{
 	// Insert code for a mouse wheel action
 }
 
 void Game::MouseMove(int x, int y, WPARAM wParam)
-{	
+{
 	// Insert code that needs to execute when the mouse pointer moves across the game window
 
 	/* Example:
@@ -100,7 +121,7 @@ void Game::MouseMove(int x, int y, WPARAM wParam)
 }
 
 void Game::CheckKeyboard()
-{	
+{
 	// Here you can check if a key is pressed down
 	// Is executed once per frame 
 
@@ -113,7 +134,7 @@ void Game::CheckKeyboard()
 }
 
 void Game::KeyPressed(TCHAR key)
-{	
+{
 	// DO NOT FORGET to use SetKeyList() !!
 
 	// Insert code that needs to execute when a key is pressed
@@ -146,6 +167,85 @@ void Game::CallAction(Caller* callerPtr)
 	// Insert the code that needs to execute when a Caller (= Button, TextBox, Timer, Audio) executes an action
 }
 
+/// <summary>
+/// PRIVATE FUNCTIONS
+/// </summary>
+void Game::ShowWarning(const tstring& message)
+{
+	GAME_ENGINE->MessageBox(message);
+}
 
+void Game::TestLua()
+{
+	lua_State* L = luaL_newstate();
+	luaL_openlibs(L); // Open Lua standard libraries
 
+	// Load the Lua script
+	if (luaL_dofile(L, "test.lua") != LUA_OK)
+	{
+		ShowWarning(_T("Error loading Lua script"));
+		lua_close(L);
+		return;
+	}
 
+	// Retrieve the message from Lua
+	lua_getglobal(L, "message");
+	if (lua_isstring(L, -1))
+	{
+		const char* message = lua_tostring(L, -1);
+		// Convert message to TCHAR and show it
+		auto tmessage = std::basic_string<TCHAR>(message, message + strlen(message));
+		ShowWarning(tmessage);  // This assumes you're using _UNICODE
+	}
+	else
+	{
+		ShowWarning(_T("Lua script did not define 'message'"));
+	}
+
+	// Clean up Lua
+	lua_close(L);
+}
+
+void Game::TestLua(const std::basic_string<TCHAR>& scriptName)
+{
+	lua_State* L = luaL_newstate();
+	luaL_openlibs(L); // Open Lua standard libraries
+	// Load the Lua script
+	if (luaL_dofile(L, std::string(scriptName.begin(), scriptName.end()).c_str()) != LUA_OK)
+	{
+		ShowWarning(_T("Error loading Lua script"));
+		lua_close(L);
+		return;
+	}
+	// Retrieve the message from Lua
+	lua_getglobal(L, "message");
+	if (lua_isstring(L, -1))
+	{
+		const char* message = lua_tostring(L, -1);
+		// Convert message to TCHAR and show it
+		auto tmessage = std::basic_string<TCHAR>(message, message + strlen(message));
+		ShowWarning(tmessage);  // This assumes you're using _UNICODE
+	}
+	else
+	{
+		ShowWarning(_T("Lua script did not define 'message'"));
+	}
+	// Clean up Lua
+	lua_close(L);
+}
+
+void Game::WhatFile(const std::string& scriptName)
+{
+	std::ifstream file(scriptName);
+	auto tScriptName = std::basic_string<TCHAR>(scriptName.begin(), scriptName.end());
+	if (file.is_open())
+	{
+		ShowWarning(_T("File ") + tScriptName + _T(" exists."));
+		TestLua(tScriptName);
+		file.close();
+	}
+	else
+	{
+		ShowWarning(_T("File ") + tScriptName + _T(" does not exist."));
+	}
+}
