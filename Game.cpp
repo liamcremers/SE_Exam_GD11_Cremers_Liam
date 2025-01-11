@@ -48,8 +48,6 @@ void Game::Initialize()
 #if defined(_DEBUG)
 #if defined(_WIN64)
 	ShowWarning(_T("Running in x64 Debug mode"));
-	TestLua();
-	WhatFile(m_ScriptName);
 #else
 	ShowWarning(_T("Running in x86 Debug mode"));
 #endif
@@ -60,6 +58,8 @@ void Game::Initialize()
 	ShowWarning(_T("Running in x86 Release mode"));
 #endif
 #endif
+	TestLua();
+	WhatFile(m_ScriptName);
 }
 
 void Game::Start()

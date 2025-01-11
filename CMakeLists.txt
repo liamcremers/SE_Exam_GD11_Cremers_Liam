@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 project(SE_Exam_GD11_Cremers_Liam)
 
 # Language
@@ -30,6 +30,13 @@ set(ENGINE_FILES
 set(GAME_FILES
     Game.cpp
     Game.h
+
+    Color.cpp
+    Color.h
+    SetupContext.cpp
+    SetupContext.h
+    ToyPainter.cpp
+    ToyPainter.h
 )
 
 file(GLOB LUA_FILES Lua/*.lua)
@@ -55,8 +62,8 @@ add_executable(${PROJECT_NAME} ${ALL_FILES})
 # Source groups for filters
 source_group("Engine Files" FILES ${ENGINE_FILES})
 source_group("Game Files" FILES ${GAME_FILES})
+source_group("Game Files\\Lua" FILES ${LUA_FILES})
 source_group("Resource Files" FILES ${RESOURCE_FILES})
-source_group("Resource Files\\Lua Files" FILES ${LUA_FILES})
 
 # Link options
 if(MSVC)
@@ -68,6 +75,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(FetchContent)
+include(sdl)
 include(Lua)
 include(Sol2)
 
@@ -75,6 +83,7 @@ include(Sol2)
 add_custom_target(CopyScripts ALL
     COMMENT "Copying Lua scripts to output directory"
 )
+set_target_properties(CopyScripts PROPERTIES FOLDER "ThirdParty/dae")
 
 FOREACH(LUA_FILE IN LISTS LUA_FILES)
     get_filename_component(LUA_FILE_NAME ${LUA_FILE} NAME)
