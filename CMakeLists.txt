@@ -30,13 +30,6 @@ set(ENGINE_FILES
 set(GAME_FILES
     Game.cpp
     Game.h
-
-    Color.cpp
-    Color.h
-    SetupContext.cpp
-    SetupContext.h
-    ToyPainter.cpp
-    ToyPainter.h
 )
 
 file(GLOB LUA_FILES Lua/*.lua)
@@ -75,7 +68,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE _UNICODE)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(FetchContent)
-include(sdl)
 include(Lua)
 include(Sol2)
 

@@ -8,19 +8,22 @@
 //-----------------------------------------------------------------
 // Include Files
 //-----------------------------------------------------------------
+#include <sol/sol.hpp>
 
 #include "Resource.h"	
 #include "GameEngine.h"
 #include "AbstractGame.h"
 
+//-----------------------------------------------------------------
+// Game Class																
+//-----------------------------------------------------------------
 class Game : public AbstractGame, public Callable
 {
 public:				
 	//---------------------------
 	// Constructor(s) and Destructor
 	//---------------------------
-	Game() = default;
-	Game(const std::string& scriptName); // Add this constructor
+	Game();
 
 	virtual ~Game() override;
 
@@ -45,17 +48,75 @@ public:
 	void MouseMove			(int x, int y, WPARAM wParam)								override;
 	void CheckKeyboard		()															override;
 	void KeyPressed			(TCHAR key)													override;
-	
 	void CallAction			(Caller* callerPtr)											override;
 
-	void ShowWarning(const tstring& message);
-
-	void TestLua();
-	void TestLua(const std::basic_string<TCHAR>& scriptName);
-	void WhatFile(const std::string& scriptName);
 private:
+	/// <summary>
+	/// PRIVATE FUNCTIONS
+	/// </summary>
+	inline void ShowWarning(const tstring& message)
+	{
+		GAME_ENGINE->MessageBox(message);
+	}
+	inline void WhatVersion()
+	{
+	#if defined(_DEBUG)
+	#if defined(_WIN64)
+		OutputDebugString(_T("Running in x64 Debug mode"));
+	#else
+		OutputDebugString(_T("Running in x86 Debug mode"));
+	#endif
+	#else
+	#if defined(_WIN64)
+		OutputDebugString(_T("Running in x64 Release mode"));
+	#else
+		OutputDebugString(_T("Running in x86 Release mode"));
+	#endif
+	#endif
+	}
+	inline void WhatFile(const std::string& scriptName)
+	{
+		std::ifstream file(scriptName);
+		auto tScriptName = std::basic_string<TCHAR>(scriptName.begin(), scriptName.end());
+		if (file.is_open())
+		{
+			OutputDebugString(_T("File ") + tScriptName + _T(" exists."));
+			file.close();
+		}
+		else
+		{
+			ShowWarning(_T("File ") + tScriptName + _T(" does not exist."));
+		}
+	}
+	inline void SetScript(const std::string& scriptName) 
+	{
+		m_ScriptName = scriptName; 
+	}
+
+	void LuaParseScript();
+	void BindLuaFunctions();
+	void BindCppFunctions();
+	void TestLua(const std::basic_string<TCHAR>& scriptName);
+	void AllocateConsole();
+
+	//TEMP FUNCTIONS
+	void TempCpp();
 	// -------------------------
 	// Datamembers
 	// -------------------------
-	std::string m_ScriptName; // Add this data member
+	std::string m_ScriptName{};
+
+private:
+	sol::state lua; // Lua state
+	sol::function lua_initialize;
+	sol::function lua_start;
+	sol::function lua_end;
+	sol::function lua_paint;
+	sol::function lua_tick;
+	sol::function lua_mouse_button_action;
+	sol::function lua_mouse_wheel_action;
+	sol::function lua_mouse_move;
+	sol::function lua_check_keyboard;
+	sol::function lua_key_pressed;
+	sol::function lua_call_action;
 };

@@ -398,7 +398,7 @@ bool GameEngine::MessageContinue(const tstring& message) const
 	#ifdef UNICODE						
 		return MessageBoxW(GetWindow(), message.c_str(), m_Title.c_str(), MB_ICONWARNING | MB_OKCANCEL) == IDOK;
 	#else
-		return MessageBoxA(GetWindow(), text.c_str(), m_Title.c_str(), MB_ICONWARNING | MB_OKCANCEL) == IDOK;
+		return MessageBoxA(GetWindow(), message.c_str(), m_Title.c_str(), MB_ICONWARNING | MB_OKCANCEL) == IDOK;
 	#endif 
 }
 
@@ -408,7 +408,7 @@ void GameEngine::MessageBox(const tstring& message) const
 	#ifdef UNICODE						
 		MessageBoxW(GetWindow(), message.c_str(), m_Title.c_str(), MB_ICONEXCLAMATION | MB_OK);
 	#else
-		MessageBoxA(GetWindow(), text.c_str(), m_Title.c_str(), MB_ICONEXCLAMATION | MB_OK);
+		MessageBoxA(GetWindow(), message.c_str(), m_Title.c_str(), MB_ICONEXCLAMATION | MB_OK);
 	#endif 
 }
 
@@ -1308,7 +1308,12 @@ Bitmap::Bitmap(int IDBitmap, const tstring& type, bool createAlphaChannel): m_Tr
 
 HBITMAP Bitmap::LoadPNG(TCHAR* pFilePath)
 {
+#ifdef UNICODE
 	Gdiplus::Bitmap* bitmapPtr = Gdiplus::Bitmap::FromFile(pFilePath, false);
+#else
+	std::wstring wFilePath(pFilePath, pFilePath + strlen(pFilePath));
+	Gdiplus::Bitmap* bitmapPtr = Gdiplus::Bitmap::FromFile(wFilePath.c_str(), false);
+#endif
 
 	HBITMAP hBitmap{};
 
