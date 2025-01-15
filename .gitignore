@@ -361,3 +361,28 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/.idea
+/cmake-build-debug/.cmake/api/v1
+/cmake-build-debug
+/cmake-build-debug-event-trace
+/cmake-build-debug-visual-studio
+/cmake-build-release
+/Game/.cmake/api/v1/query
+/Game/CMakeFiles
+/Game/_deps
+/Game/ALL_BUILD.vcxproj
+/Game/ALL_BUILD.vcxproj.filters
+/Game/CMakeCache.txt
+/Game/cmake_install.cmake
+/Game/CopyScripts.vcxproj
+/Game/CopyScripts.vcxproj.filters
+/Game/INSTALL.vcxproj
+/Game/INSTALL.vcxproj.filters
+/Game/script_breakout.lua
+/Game/script_tetris.lua
+/Game/SE_Exam_GD11_Cremers_Liam.exe
+/Game/SE_Exam_GD11_Cremers_Liam.sln
+/Game/SE_Exam_GD11_Cremers_Liam.vcxproj
+/Game/SE_Exam_GD11_Cremers_Liam.vcxproj.filters
+/Game/ZERO_CHECK.vcxproj
+/Game/ZERO_CHECK.vcxproj.filters

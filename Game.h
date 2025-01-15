@@ -97,10 +97,8 @@ private:
 	void BindLuaFunctions();
 	void BindCppFunctions();
 	void TestLua(const std::basic_string<TCHAR>& scriptName);
-	void AllocateConsole();
+	void AllocateConsole() const;
 
-	//TEMP FUNCTIONS
-	void TempCpp();
 	// -------------------------
 	// Datamembers
 	// -------------------------
