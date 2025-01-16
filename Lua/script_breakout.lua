@@ -1,10 +1,79 @@
+--TODO: game_won needs to be placed in another place in my file because it looks stupid here but also anywhere else it breaks the code
 local game_won = false
---718
+local lives = 3
+local current_level = 1
+function loseLife()
+    lives = lives - 1
+    if lives <= 0 then
+        gameOver()
+    else
+        resetGame()
+    end
+end
+function resetGame()
+    -- Reset ball position and direction
+    createBall()
+
+    -- Reset paddle position
+    createPaddle()
+
+    print("Lives remaining: " .. lives)
+    print("Level: " .. current_level)
+end
+function hardResetGame()
+    createBall()
+    createPaddle()
+    createBreakoutBlocks()
+
+    print("Lives remaining: " .. lives)
+    print("Level: " .. current_level)
+end
+function gameOver()
+    print("Game Over!")
+    -- Display game over message or reset the game entirely
+    lives = 3
+    current_level = 1
+
+    hardResetGame()
+end
+function checkVictory()
+    for _, row in pairs(blocks) do
+        for _, block in pairs(row) do
+            if block ~= nil then
+                return false -- Found an existing block, not a victory yet
+            end
+        end
+    end
+    return true -- No blocks found, player has won
+end
+function displayVictoryMessage()
+    SetColor(255, 255, 255) -- White color for the message
+    message = "You Won!"
+    textWidth, textHeight = CalculateTextDimensions(message)
+    x = math.floor(WINDOW_WIDTH / 2 - textWidth / 2)
+    y = math.floor(WINDOW_HEIGHT / 2 - textHeight / 2)
+    GAME_ENGINE:DrawString(message, x, y)
+
+    -- TODO: DEBUG
+    --setcolor(255, 0, 0)
+    --x1 = 0
+    --y1 = math.floor(window_height / 2)
+    --width1 = math.floor(window_width)
+    --height1 = math.floor(window_height / 2)
+    --
+    --x2 = math.floor(window_width / 2)
+    --y2 = 0
+    --width2 = math.floor(window_width / 2)
+    --height2 = math.floor(window_height)
+    --drawline(x1, y1, width1, height1)
+    --DrawLine(x2, y2, width2, height2)
+end
+
 local WINDOW_WIDTH = 640
 local WINDOW_HEIGHT = 560
 local WINDOW_FPS = 60
 function initializeWindow()
-    SetTitle("Breakout Game");
+    GAME_ENGINE:SetTitle("Breakout Game")
     SetWidth(WINDOW_WIDTH);
     SetHeight(WINDOW_HEIGHT);
     SetFrameRate(WINDOW_FPS);
@@ -53,9 +122,9 @@ function drawBreakoutBlocks()
     end
 end
 
-local Ball = {}  -- Properly initialize Circle as a table
-Ball.__index = Ball  -- Now this works because Circle is a valid table
-local CIRCLE_SPEED = 40.0  -- Pixels per second
+local Ball = {}  -- Properly initialize Ball as a table
+Ball.__index = Ball  -- Now this works because Ball is a valid table
+local BALL_SPEED = 400.0  -- Pixels per second
 local RADIUS = 10
 local CENTER_X = WINDOW_WIDTH / 2
 local CENTER_Y = WINDOW_HEIGHT * 0.75
@@ -81,8 +150,8 @@ function createBall()
 end
 function Ball:move(elapsed_time)
     -- Calculate distance based on speed and delta time
-    local distance_x = self.dx * CIRCLE_SPEED * elapsed_time
-    local distance_y = self.dy * CIRCLE_SPEED * elapsed_time
+    local distance_x = self.dx * BALL_SPEED * elapsed_time
+    local distance_y = self.dy * BALL_SPEED * elapsed_time
 
     -- Update position
     self.x = self.x + distance_x
@@ -125,7 +194,7 @@ function Ball:check_collision_with_blocks()
                     self.dx = -self.dx
                 end
 
-                 --Remove the block by setting it to `nil`
+                --Remove the block by setting it to `nil`
                 row[colIndex] = nil
                 if checkVictory() then
                     game_won = true
@@ -138,15 +207,13 @@ function Ball:check_collision_with_blocks()
     end
 end
 
--- Constants for Paddle
 local PADDLE_WIDTH = 80
 local PADDLE_HEIGHT = 20
-local PADDLE_SPEED = 100.0 -- Pixels per second
-
--- Initialize the Paddle
+local PADDLE_SPEED = 1000.0 -- Pixels per second
 local Paddle = {}
+local VK_LEFT = 0x25
+local VK_RIGHT = 0x27
 Paddle.__index = Paddle
-
 function Paddle.new(x, y, width, height, color)
     local self = setmetatable({}, Paddle)
     self.x = x
@@ -179,8 +246,6 @@ function Paddle:draw()
     SetColor(self.color[1], self.color[2], self.color[3])
     FillRect(left, top, right, bottom)
 end
-VK_LEFT = 0x25
-VK_RIGHT = 0x27
 function Paddle:handle_input()
     if IsKeyDown(VK_LEFT) then
         self.dx = -1
@@ -200,81 +265,7 @@ function Paddle:check_collision_with_ball(ball)
     end
 end
 
--- Define global variables for game state
-local lives = 3
-local current_level = 1
-
-function loseLife()
-    lives = lives - 1
-    if lives <= 0 then
-        gameOver()
-    else
-        resetGame()
-    end
-end
-
-function resetGame()
-    -- Reset ball position and direction
-    createBall()
-
-    -- Reset paddle position
-    createPaddle()
-
-    print("Lives remaining: " .. lives)
-    print("Level: " .. current_level)
-end
-function hardResetGame()
-    createBall()
-    createPaddle()
-    createBreakoutBlocks()
-
-    print("Lives remaining: " .. lives)
-    print("Level: " .. current_level)
-end
-function gameOver()
-    print("Game Over!")
-    -- Display game over message or reset the game entirely
-    lives = 3
-    current_level = 1
-
-    hardResetGame()
-end
-
-function checkVictory()
-    for _, row in pairs(blocks) do
-        for _, block in pairs(row) do
-            if block ~= nil then
-                return false -- Found an existing block, not a victory yet
-            end
-        end
-    end
-    return true -- No blocks found, player has won
-end
-
-function displayVictoryMessage()
-    SetColor(255, 255, 255) -- White color for the message
-    message = "You Won!"
-    textWidth, textHeight = CalculateTextDimensions(message)
-    x = math.floor(WINDOW_WIDTH / 2 - textWidth / 2)
-    y = math.floor(WINDOW_HEIGHT / 2 - textHeight / 2)
-    DrawString(message, x, y)
-
-    -- TODO: DEBUG
-    --SetColor(255, 0, 0)
-    --x1 = 0
-    --y1 = math.floor(WINDOW_HEIGHT / 2)
-    --width1 = math.floor(WINDOW_WIDTH)
-    --height1 = math.floor(WINDOW_HEIGHT / 2)
-    --
-    --x2 = math.floor(WINDOW_WIDTH / 2)
-    --y2 = 0
-    --width2 = math.floor(WINDOW_WIDTH / 2)
-    --height2 = math.floor(WINDOW_HEIGHT)
-    --DrawLine(x1, y1, width1, height1)
-    --DrawLine(x2, y2, width2, height2)
-end
-
--- ______________________________________________________________________________________
+-- ____________________________________________________________________________________________________________________
 function initialize()
     initializeWindow()
 end
@@ -303,7 +294,7 @@ function tick()
         return
     end
 
-    local elapsed_time = GetFrameDelay() * 0.01
+    local elapsed_time = GetFrameDelay() * 0.001
 
     paddle:handle_input()
     paddle:move(elapsed_time)

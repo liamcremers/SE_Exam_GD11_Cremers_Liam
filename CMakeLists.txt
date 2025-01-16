@@ -5,40 +5,37 @@ project(SE_Exam_GD11_Cremers_Liam)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Set the executable name
-set(EXE_NAME SE_Exam_GD11_Cremers_Liam)
-
 # Specify the output directory for the executable
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/Game")
 
 # Set warning level 3
 if(MSVC)
-    add_compile_options(/W3 /permissive- /sdl)
+    add_compile_options(/W3 /permissive-)
 endif()
 
 # Source files
 set(ENGINE_FILES
-    AbstractGame.cpp
-    AbstractGame.h
-    GameDefines.h
-    GameEngine.cpp
-    GameEngine.h
-    GameWinMain.cpp
-    GameWinMain.h
+	src/AbstractGame.cpp
+	src/AbstractGame.h
+	src/GameDefines.h
+	src/GameEngine.cpp
+	src/GameEngine.h
+	src/GameWinMain.cpp
+	src/GameWinMain.h
 )
 
 set(GAME_FILES
-    Game.cpp
-    Game.h
+	src/Game.cpp
+	src/Game.h
 )
 
-file(GLOB LUA_FILES Lua/*.lua)
+file(GLOB LUA_FILES lua/*.lua)
 
 set(RESOURCE_FILES
-    resource.h
-    Game.rc
-    small.ico
-    big.ico
+    src/resource.h
+    src/Game.rc
+    src/small.ico
+    src/big.ico
 )
 
 # Combine all source files
@@ -85,4 +82,4 @@ FOREACH(LUA_FILE IN LISTS LUA_FILES)
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${LUA_FILE_NAME})
 ENDFOREACH()
 
-add_dependencies(${EXE_NAME} CopyScripts)
+add_dependencies(${PROJECT_NAME} CopyScripts)

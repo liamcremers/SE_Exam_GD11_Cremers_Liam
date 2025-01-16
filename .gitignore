@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 
+Game/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -386,3 +388,6 @@ FodyWeavers.xsd
 /Game/SE_Exam_GD11_Cremers_Liam.vcxproj.filters
 /Game/ZERO_CHECK.vcxproj
 /Game/ZERO_CHECK.vcxproj.filters
+/Game/annotations.lua
+/Game/SDL2d.dll
+/Game/SDL2d.dll

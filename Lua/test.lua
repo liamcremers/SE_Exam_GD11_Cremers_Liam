@@ -1,2 +1,2 @@
--- message.lua
-message = "Lua beep beep test"
+-- message beep beep boop boop
+print("beep beep boop boop")
