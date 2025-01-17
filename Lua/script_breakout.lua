@@ -116,8 +116,8 @@ function drawBreakoutBlocks()
         -- Use `pairs` to iterate over all rows
         for _, block in pairs(colorRow) do
             -- Use `pairs` again for individual blocks
-            SetColor(block.color[1], block.color[2], block.color[3])
-            FillRect(block.left, block.top, block.left + 60, block.top + 30)
+            GAME_ENGINE:SetColor(block.color[1], block.color[2], block.color[3])
+            GAME_ENGINE:FillRect(block.left, block.top, block.left + 60, block.top + 30)
         end
     end
 end
@@ -176,7 +176,7 @@ function Ball:draw()
     top = math.floor(self.y - self.radius)
     right = math.floor(self.x + self.radius)
     bottom = math.floor(self.y + self.radius)
-    FillOval(left, top, right, bottom)
+    GAME_ENGINE:FillOval(left, top, right, bottom)
 end
 function Ball:check_collision_with_blocks()
     for _, row in pairs(blocks) do
@@ -271,13 +271,15 @@ function initialize()
 end
 
 function start()
+    --GAME_ENGINE:MessageBox(_T("Welcome to Breakout!"))
+    GAME_ENGINE:MessageBox("Welcome to Breakout!")
     createBreakoutBlocks()
     createBall()
     createPaddle()
 end
 
 function paint()
-    FillWindowRect(0, 0, 0)
+    GAME_ENGINE:FillWindowRect(0, 0, 0)
     if game_won then
         displayVictoryMessage()
         return
