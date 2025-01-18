@@ -11,6 +11,7 @@
 *.sln.docstates
 
 /Game/
+/build/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -561,3 +562,4 @@ build/CMakeFiles/3.31.4/CompilerIdCXX/CMakeCXXCompilerId.cpp
 build/CMakeFiles/3.31.4/CompilerIdCXX/CompilerIdCXX.exe
 build/CMakeFiles/3.31.4/CompilerIdCXX/CompilerIdCXX.vcxproj
 build/CMakeFiles/5715929a4b4bc44f6f4a79564a067279/INSTALL_force.rule
+/.vscode

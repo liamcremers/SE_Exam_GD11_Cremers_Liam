@@ -1,5 +1,5 @@
---TODO: game_won needs to be placed in another place in my file because it looks stupid here but also anywhere else it breaks the code
 local game_won = false
+--TODO: game_won needs to be placed in another place in my file because it looks stupid here but also anywhere else it breaks the code
 local lives = 3
 local current_level = 1
 function loseLife()
@@ -10,6 +10,7 @@ function loseLife()
         resetGame()
     end
 end
+
 function resetGame()
     -- Reset ball position and direction
     createBall()
@@ -20,6 +21,7 @@ function resetGame()
     print("Lives remaining: " .. lives)
     print("Level: " .. current_level)
 end
+
 function hardResetGame()
     createBall()
     createPaddle()
@@ -28,6 +30,7 @@ function hardResetGame()
     print("Lives remaining: " .. lives)
     print("Level: " .. current_level)
 end
+
 function gameOver()
     print("Game Over!")
     -- Display game over message or reset the game entirely
@@ -36,47 +39,17 @@ function gameOver()
 
     hardResetGame()
 end
-function checkVictory()
-    for _, row in pairs(blocks) do
-        for _, block in pairs(row) do
-            if block ~= nil then
-                return false -- Found an existing block, not a victory yet
-            end
-        end
-    end
-    return true -- No blocks found, player has won
-end
-function displayVictoryMessage()
-    SetColor(255, 255, 255) -- White color for the message
-    message = "You Won!"
-    textWidth, textHeight = CalculateTextDimensions(message)
-    x = math.floor(WINDOW_WIDTH / 2 - textWidth / 2)
-    y = math.floor(WINDOW_HEIGHT / 2 - textHeight / 2)
-    GAME_ENGINE:DrawString(message, x, y)
-
-    -- TODO: DEBUG
-    --setcolor(255, 0, 0)
-    --x1 = 0
-    --y1 = math.floor(window_height / 2)
-    --width1 = math.floor(window_width)
-    --height1 = math.floor(window_height / 2)
-    --
-    --x2 = math.floor(window_width / 2)
-    --y2 = 0
-    --width2 = math.floor(window_width / 2)
-    --height2 = math.floor(window_height)
-    --drawline(x1, y1, width1, height1)
-    --DrawLine(x2, y2, width2, height2)
-end
 
 local WINDOW_WIDTH = 640
 local WINDOW_HEIGHT = 560
 local WINDOW_FPS = 60
+local WINDOW_FONT = Font.new("Press Start 2P", false, false, false, 64)
 function initializeWindow()
     GAME_ENGINE:SetTitle("Breakout Game")
-    SetWidth(WINDOW_WIDTH);
-    SetHeight(WINDOW_HEIGHT);
-    SetFrameRate(WINDOW_FPS);
+    GAME_ENGINE:SetWidth(WINDOW_WIDTH);
+    GAME_ENGINE:SetHeight(WINDOW_HEIGHT);
+    GAME_ENGINE:SetFrameRate(WINDOW_FPS);
+    GAME_ENGINE:SetFont(WINDOW_FONT)
 end
 
 local blocks = {}
@@ -111,20 +84,21 @@ function createBreakoutBlocks()
         end
     end
 end
+
 function drawBreakoutBlocks()
     for _, colorRow in pairs(blocks) do
         -- Use `pairs` to iterate over all rows
         for _, block in pairs(colorRow) do
             -- Use `pairs` again for individual blocks
-            GAME_ENGINE:SetColor(block.color[1], block.color[2], block.color[3])
+            GAME_ENGINE:SetColor(RGB(block.color[1], block.color[2], block.color[3]))
             GAME_ENGINE:FillRect(block.left, block.top, block.left + 60, block.top + 30)
         end
     end
 end
 
-local Ball = {}  -- Properly initialize Ball as a table
-Ball.__index = Ball  -- Now this works because Ball is a valid table
-local BALL_SPEED = 400.0  -- Pixels per second
+local Ball = {}          -- Properly initialize Ball as a table
+Ball.__index = Ball      -- Now this works because Ball is a valid table
+local BALL_SPEED = 400.0 -- Pixels per second
 local RADIUS = 10
 local CENTER_X = WINDOW_WIDTH / 2
 local CENTER_Y = WINDOW_HEIGHT * 0.75
@@ -138,16 +112,18 @@ function Ball.new(x, y, radius, color, dx, dy)
     self.dy = dy or 0
     return self
 end
+
 function createBall()
     ball = Ball.new(
-            CENTER_X,
-            CENTER_Y,
-            RADIUS,
-            { 255, 255, 255 }, -- White color
-            math.random(2) == 1 and -1 or 1, -- Random x direction
-            -1
+        CENTER_X,
+        CENTER_Y,
+        RADIUS,
+        { 255, 255, 255 },               -- White color
+        math.random(2) == 1 and -1 or 1, -- Random x direction
+        -1
     )
 end
+
 function Ball:move(elapsed_time)
     -- Calculate distance based on speed and delta time
     local distance_x = self.dx * BALL_SPEED * elapsed_time
@@ -170,21 +146,22 @@ function Ball:move(elapsed_time)
         loseLife()
     end
 end
+
 function Ball:draw()
-    SetColor(self.color[1], self.color[2], self.color[3])
+    GAME_ENGINE:SetColor(RGB(self.color[1], self.color[2], self.color[3]))
     left = math.floor(self.x - self.radius)
     top = math.floor(self.y - self.radius)
     right = math.floor(self.x + self.radius)
     bottom = math.floor(self.y + self.radius)
     GAME_ENGINE:FillOval(left, top, right, bottom)
 end
+
 function Ball:check_collision_with_blocks()
     for _, row in pairs(blocks) do
         for colIndex, block in pairs(row) do
             -- Check if the ball intersects the block
             if self.x + self.radius > block.left and self.x - self.radius < block.left + 60 and
-                    self.y + self.radius > block.top and self.y - self.radius < block.top + 30 then
-
+                self.y + self.radius > block.top and self.y - self.radius < block.top + 30 then
                 -- Reflect the ball's velocity
                 if self.x > block.left and self.x < block.left + 60 then
                     -- Collision on the top or bottom of the block
@@ -224,45 +201,88 @@ function Paddle.new(x, y, width, height, color)
     self.dx = 0 -- Paddle movement speed (0 = stationary)
     return self
 end
+
 function createPaddle()
     paddle = Paddle.new(
-            CENTER_X - PADDLE_WIDTH / 2,
-            WINDOW_HEIGHT - (PADDLE_HEIGHT * 2), -- Position the paddle near the bottom
-            PADDLE_WIDTH,
-            PADDLE_HEIGHT,
-            { 255, 255, 255 } -- White color
+        CENTER_X - PADDLE_WIDTH / 2,
+        WINDOW_HEIGHT - (PADDLE_HEIGHT * 2), -- Position the paddle near the bottom
+        PADDLE_WIDTH,
+        PADDLE_HEIGHT,
+        { 255, 255, 255 } -- White color
     )
 end
+
 function Paddle:move(elapsed_time)
     self.x = self.x + self.dx * PADDLE_SPEED * elapsed_time
     self.x = math.max(0, math.min(self.x, WINDOW_WIDTH - self.width))
 end
+
 function Paddle:draw()
     left = math.floor(self.x)
     top = math.floor(self.y)
     right = math.floor(self.x + self.width)
     bottom = math.floor(self.y + self.height)
 
-    SetColor(self.color[1], self.color[2], self.color[3])
-    FillRect(left, top, right, bottom)
+    GAME_ENGINE:SetColor(RGB(self.color[1], self.color[2], self.color[3]))
+    GAME_ENGINE:FillRect(left, top, right, bottom)
 end
+
 function Paddle:handle_input()
-    if IsKeyDown(VK_LEFT) then
+    if GAME_ENGINE:IsKeyDown(VK_LEFT) then
         self.dx = -1
-    elseif IsKeyDown(VK_RIGHT) then
+    elseif GAME_ENGINE:IsKeyDown(VK_RIGHT) then
         self.dx = 1
+    elseif true then
+        game_won = true
     else
         self.dx = 0
     end
 end
+
 function Paddle:check_collision_with_ball(ball)
     if ball.x + ball.radius > self.x and ball.x - ball.radius < self.x + self.width and
-            ball.y + ball.radius > self.y and ball.y - ball.radius < self.y + self.height then
+        ball.y + ball.radius > self.y and ball.y - ball.radius < self.y + self.height then
         ball.dy = -ball.dy
 
         local hit_position = (ball.x - self.x) / self.width
         ball.dx = (hit_position - 0.5) * 2 -- Normalize to range [-1, 1]
     end
+end
+
+function displayVictoryMessage()
+    GAME_ENGINE:SetColor(RGB(255, 255, 255))
+    message = "You Won!"
+    Dimensions = GAME_ENGINE:CalculateTextDimensions(message, WINDOW_FONT)
+    textWidth = Dimensions.cx
+    textHeight = Dimensions.cy
+    x = math.floor((WINDOW_WIDTH / 2) - textWidth / 2)
+    y = math.floor((WINDOW_HEIGHT / 2) - textHeight / 2)
+    GAME_ENGINE:DrawString(message, x, y)
+
+    ----TODO: DEBUG
+    --GAME_ENGINE:SetColor(RGB(255, 0, 0))
+    --x1 = 0
+    --y1 = math.floor(WINDOW_HEIGHT / 2)
+    --width1 = math.floor(WINDOW_WIDTH)
+    --height1 = math.floor(WINDOW_HEIGHT / 2)
+    --
+    --x2 = math.floor(WINDOW_WIDTH / 2)
+    --y2 = 0
+    --width2 = math.floor(WINDOW_WIDTH / 2)
+    --height2 = math.floor(WINDOW_HEIGHT)
+    --GAME_ENGINE:DrawLine(x1, y1, width1, height1)
+    --GAME_ENGINE:DrawLine(x2, y2, width2, height2)
+end
+
+function checkVictory()
+    for _, row in pairs(blocks) do
+        for _, block in pairs(row) do
+            if block ~= nil then
+                return false -- Found an existing block, not a victory yet
+            end
+        end
+    end
+    return true -- No blocks found, player has won
 end
 
 -- ____________________________________________________________________________________________________________________
@@ -271,15 +291,13 @@ function initialize()
 end
 
 function start()
-    --GAME_ENGINE:MessageBox(_T("Welcome to Breakout!"))
-    GAME_ENGINE:MessageBox("Welcome to Breakout!")
     createBreakoutBlocks()
     createBall()
     createPaddle()
 end
 
 function paint()
-    GAME_ENGINE:FillWindowRect(0, 0, 0)
+    GAME_ENGINE:FillWindowRect(RGB(0, 0, 0))
     if game_won then
         displayVictoryMessage()
         return
@@ -292,11 +310,10 @@ end
 
 function tick()
     if game_won then
-        displayVictoryMessage()
         return
     end
 
-    local elapsed_time = GetFrameDelay() * 0.001
+    local elapsed_time = GAME_ENGINE:GetFrameDelay() * 0.001
 
     paddle:handle_input()
     paddle:move(elapsed_time)
