@@ -100,9 +100,9 @@ private:
 	// -------------------------
 	// Datamembers
 	// -------------------------
+	std::unique_ptr<Audio> m_AudioPtr{};
 	std::string m_ScriptName{};
 
-private:
 	sol::state lua; // Lua state
 	sol::function lua_initialize;
 	sol::function lua_start;

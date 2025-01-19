@@ -242,3 +242,88 @@ function GAME_ENGINE:GetFrameDelay() end
 function GAME_ENGINE:GetWindowPosition() end
 
 ---TODO: key
+
+---@class Audio
+---@field Tick fun(self: Audio, deltaTime: number) Updates the audio each frame.
+---@field Play fun(self: Audio):boolean Starts playing the audio.
+---@field Pause fun(self: Audio):boolean Pauses the audio playback.
+---@field Stop fun(self: Audio):boolean Stops and resets the audio playback.
+---@field SetVolume fun(self: Audio, volume: number):boolean Sets the volume of the audio (0.0 to 1.0).
+---@field SetRepeat fun(self: Audio, repeat: boolean):boolean Sets whether the audio should repeat.
+---@field GetName fun(self: Audio):string Gets the name of the audio file.
+---@field GetAlias fun(self: Audio):string Gets the alias of the audio.
+---@field GetDuration fun(self: Audio):number Gets the total duration of the audio in seconds.
+---@field IsPlaying fun(self: Audio):boolean Checks if the audio is currently playing.
+---@field IsPaused fun(self: Audio):boolean Checks if the audio is currently paused.
+---@field GetRepeat fun(self: Audio):boolean Gets the repeat setting (looping).
+---@field Exists fun(self: Audio):boolean Checks if the audio file exists and is valid.
+---@field GetVolume fun(self: Audio):number Gets the current volume level.
+---@field GetType fun(self: Audio):string the audio file type/format.
+Audio = {}
+
+--- Constructs a new Audio object with the given filename.
+---@param filename string The name of the audio file to load.
+---@return Audio A new Audio object.
+function Audio.new(filename) end
+
+--- Updates the audio each frame (typically used for handling updates like playback state).
+---@param deltaTime number The time elapsed since the last update (in seconds).
+function Audio:Tick(deltaTime) end
+
+--- Plays the audio.
+---@return boolean True if the audio started playing successfully.
+function Audio:Play() end
+
+--- Pauses the audio if it is currently playing.
+---@return boolean True if the audio was paused successfully.
+function Audio:Pause() end
+
+--- Stops the audio and resets the playback position.
+---@return boolean True if the audio was stopped successfully.
+function Audio:Stop() end
+
+--- Sets the volume of the audio.
+---@param volume number The volume level to set (0.0 to 1.0).
+---@return boolean True if the volume was set successfully.
+function Audio:SetVolume(volume) end
+
+--- Sets whether the audio should repeat when finished.
+---@param repeat boolean If `true`, the audio will repeat.
+---@return boolean True if the repeat setting was updated successfully.
+function Audio:SetRepeat(repeat) end
+
+--- Gets the name of the audio file.
+---@return string The name of the audio file.
+function Audio:GetName() end
+
+--- Gets the alias of the audio.
+---@return string The alias of the audio.
+function Audio:GetAlias() end
+
+--- Gets the total duration of the audio in seconds.
+---@return number The duration of the audio in seconds.
+function Audio:GetDuration() end
+
+--- Checks if the audio is currently playing.
+---@return boolean True if the audio is playing.
+function Audio:IsPlaying() end
+
+--- Checks if the audio is currently paused.
+---@return boolean True if the audio is paused.
+function Audio:IsPaused() end
+
+--- Gets the repeat setting of the audio (whether it will loop).
+---@return boolean True if the audio is set to repeat.
+function Audio:GetRepeat() end
+
+--- Checks if the audio file exists and is valid.
+---@return boolean True if the audio file exists and is valid.
+function Audio:Exists() end
+
+--- Gets the current volume of the audio.
+---@return number The current volume level of the audio (0.0 to 1.0).
+function Audio:GetVolume() end
+
+--- Gets the type of the audio (e.g., "mp3", "wav").
+---@return string The type/format of the audio file.
+function Audio:GetType() end

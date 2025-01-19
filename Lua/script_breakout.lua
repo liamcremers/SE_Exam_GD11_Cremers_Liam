@@ -286,8 +286,13 @@ function checkVictory()
 end
 
 -- ____________________________________________________________________________________________________________________
+
+local BackgroundSound = Audio.new("paddle.mp3")
 function initialize()
     initializeWindow()
+
+    BackgroundSound:Play()
+    print("Background sound started")
 end
 
 function start()
@@ -308,6 +313,10 @@ function paint()
     end
 end
 
+function soundsTick()
+    BackgroundSound:Tick()
+end
+
 function tick()
     if game_won then
         return
@@ -321,4 +330,7 @@ function tick()
 
     ball:move(elapsed_time)
     ball:check_collision_with_blocks()
+
+    soundsTick()
+    print("Tick")
 end

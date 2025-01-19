@@ -72,10 +72,14 @@ int my_exception_handler(lua_State* L, sol::optional<const std::exception&> mayb
 //-----------------------------------------------------------------
 
 // TODO: FIX
-Game::Game() { if (lua_start.valid())lua_start(); }
+Game::Game()
+{
+}
 
 // TODO: FIX
-Game::~Game() { if (lua_start.valid())lua_start(); }
+Game::~Game()
+{
+}
 
 void Game::Initialize()
 {
@@ -233,7 +237,6 @@ void Game::BindCppFunctions()
                              "HasAlphaChannel", &Bitmap::HasAlphaChannel,
                              "SaveToFile", &Bitmap::SaveToFile,
                              "GetHandle", &Bitmap::GetHandle);
-    // lua.new_usertype<Font>("Font", sol::constructors<Font(const tstring&, bool, bool, bool, int)>());
     lua.new_usertype<Font>("Font", sol::constructors<Font(const tstring&, bool, bool, bool, int)>());
     lua.new_usertype<GameEngine>(
         "GAME_ENGINE", sol::no_constructor,
@@ -289,10 +292,6 @@ void Game::BindCppFunctions()
             sol::resolve<bool(const Bitmap*, int, int) const>(&GameEngine::DrawBitmap),
             sol::resolve<bool(const Bitmap*, int, int, RECT) const>(&GameEngine::DrawBitmap)
         ),
-        "DrawBitmap", sol::overload(
-            sol::resolve<bool(const Bitmap*, int, int) const>(&GameEngine::DrawBitmap),
-            sol::resolve<bool(const Bitmap*, int, int, RECT) const>(&GameEngine::DrawBitmap)
-        ),
         "DrawPolygon", sol::overload(
             sol::resolve<bool(const POINT [], int) const>(&GameEngine::DrawPolygon),
             sol::resolve<bool(const POINT [], int, bool) const>(&GameEngine::DrawPolygon)
@@ -313,6 +312,46 @@ void Game::BindCppFunctions()
         "GetWindowPosition", &GameEngine::GetWindowPosition
     );
     lua["GAME_ENGINE"] = GAME_ENGINE;
+
+    lua.new_usertype<Audio>(
+        "Audio", sol::constructors<Audio(const tstring&)>(),
+        "Tick", &Audio::Tick,
+        "Play", sol::overload(
+            [](Audio& audio) { audio.Play(); },
+            [](Audio& audio, int msecStart) { audio.Play(msecStart); },
+            [](Audio& audio, int msecStart, int msecStop) { audio.Play(msecStart, msecStop); }
+        ),
+        "Pause", &Audio::Pause,
+        "Stop", &Audio::Stop,
+        "SetVolume", &Audio::SetVolume,
+        "SetRepeat", &Audio::SetRepeat,
+        "GetName", &Audio::GetName,
+        "GetAlias", &Audio::GetAlias,
+        "GetDuration", &Audio::GetDuration,
+        "IsPlaying", &Audio::IsPlaying,
+        "IsPaused", &Audio::IsPaused,
+        "GetRepeat", &Audio::GetRepeat,
+        "Exists", &Audio::Exists,
+        "GetVolume", &Audio::GetVolume,
+        "GetType", &Audio::GetType
+    );
+
+    lua.new_usertype<HitRegion>(
+        "HitRegion", sol::constructors<
+            HitRegion(HitRegion::Shape, int, int, int, int),
+            HitRegion(const POINT*, int),
+            HitRegion(const Bitmap*, COLORREF, COLORREF)
+        >(),
+        "Move", &HitRegion::Move,
+        "HitTest", sol::overload(
+            sol::resolve<bool(int, int) const>(&HitRegion::HitTest),
+            sol::resolve<bool(const HitRegion*) const>(&HitRegion::HitTest)
+        ),
+        "CollisionTest", &HitRegion::CollisionTest,
+        "GetBounds", &HitRegion::GetBounds,
+        "Exists", &HitRegion::Exists,
+        "GetHandle", &HitRegion::GetHandle
+    );
 }
 
 void Game::TestLua(const std::basic_string<TCHAR>& scriptName)
