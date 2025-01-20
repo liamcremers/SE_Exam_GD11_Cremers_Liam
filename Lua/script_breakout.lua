@@ -1,7 +1,10 @@
 local game_won = false
---TODO: game_won needs to be placed in another place in my file because it looks stupid here but also anywhere else it breaks the code
+-- TODO: game_won needs to be placed in another place in my file because it looks stupid here but also anywhere else it breaks the code
 local lives = 3
 local current_level = 1
+local paddleSound = Audio.new("paddle.mp3")
+local wallSound = Audio.new("breakBlock.mp3")
+local breakBlockSound = Audio.new("breakBlock.mp3")
 function loseLife()
     lives = lives - 1
     if lives <= 0 then
@@ -42,10 +45,10 @@ end
 
 local WINDOW_WIDTH = 640
 local WINDOW_HEIGHT = 560
-local WINDOW_FPS = 60
+local WINDOW_FPS = 120
 local WINDOW_FONT = Font.new("Press Start 2P", false, false, false, 64)
 function initializeWindow()
-    GAME_ENGINE:SetTitle("Breakout Game")
+    GAME_ENGINE:SetTitle("Breakout")
     GAME_ENGINE:SetWidth(WINDOW_WIDTH);
     GAME_ENGINE:SetHeight(WINDOW_HEIGHT);
     GAME_ENGINE:SetFrameRate(WINDOW_FPS);
@@ -54,14 +57,14 @@ end
 
 local blocks = {}
 function createBreakoutBlocks()
-    local red = { 255, 0, 0 }
-    local orange = { 255, 165, 0 }
-    local yellow = { 255, 255, 0 }
-    local green = { 0, 255, 0 }
-    local blue = { 0, 0, 255 }
-    local purple = { 128, 0, 128 }
+    local red = {255, 0, 0}
+    local orange = {255, 165, 0}
+    local yellow = {255, 255, 0}
+    local green = {0, 255, 0}
+    local blue = {0, 0, 255}
+    local purple = {128, 0, 128}
 
-    local colors = { red, orange, yellow, green, blue, purple }
+    local colors = {red, orange, yellow, green, blue, purple}
 
     local rectWidth = 60
     local rectHeight = 30
@@ -96,8 +99,8 @@ function drawBreakoutBlocks()
     end
 end
 
-local Ball = {}          -- Properly initialize Ball as a table
-Ball.__index = Ball      -- Now this works because Ball is a valid table
+local Ball = {} -- Properly initialize Ball as a table
+Ball.__index = Ball -- Now this works because Ball is a valid table
 local BALL_SPEED = 400.0 -- Pixels per second
 local RADIUS = 10
 local CENTER_X = WINDOW_WIDTH / 2
@@ -114,14 +117,9 @@ function Ball.new(x, y, radius, color, dx, dy)
 end
 
 function createBall()
-    ball = Ball.new(
-        CENTER_X,
-        CENTER_Y,
-        RADIUS,
-        { 255, 255, 255 },               -- White color
-        math.random(2) == 1 and -1 or 1, -- Random x direction
-        -1
-    )
+    ball = Ball.new(CENTER_X, CENTER_Y, RADIUS, {255, 255, 255}, -- White color
+    math.random(2) == 1 and -1 or 1, -- Random x direction
+    -1)
 end
 
 function Ball:move(elapsed_time)
@@ -137,11 +135,17 @@ function Ball:move(elapsed_time)
     if self.x - self.radius < 0 or self.x + self.radius > WINDOW_WIDTH then
         self.dx = -self.dx
         self.x = math.max(self.radius, math.min(self.x, WINDOW_WIDTH - self.radius))
+        if (wallSound:IsPlaying() == false) then
+            wallSound:Play()
+        end
     end
 
     if self.y - self.radius < 0 then
         self.dy = -self.dy
         self.y = math.max(self.radius, math.min(self.y, WINDOW_HEIGHT - self.radius))
+        if (wallSound:IsPlaying() == false) then
+            wallSound:Play()
+        end
     elseif self.y + self.radius > WINDOW_HEIGHT then
         loseLife()
     end
@@ -160,8 +164,8 @@ function Ball:check_collision_with_blocks()
     for _, row in pairs(blocks) do
         for colIndex, block in pairs(row) do
             -- Check if the ball intersects the block
-            if self.x + self.radius > block.left and self.x - self.radius < block.left + 60 and
-                self.y + self.radius > block.top and self.y - self.radius < block.top + 30 then
+            if self.x + self.radius > block.left and self.x - self.radius < block.left + 60 and self.y + self.radius >
+                block.top and self.y - self.radius < block.top + 30 then
                 -- Reflect the ball's velocity
                 if self.x > block.left and self.x < block.left + 60 then
                     -- Collision on the top or bottom of the block
@@ -171,7 +175,7 @@ function Ball:check_collision_with_blocks()
                     self.dx = -self.dx
                 end
 
-                --Remove the block by setting it to `nil`
+                -- Remove the block by setting it to `nil`
                 row[colIndex] = nil
                 if checkVictory() then
                     game_won = true
@@ -203,13 +207,10 @@ function Paddle.new(x, y, width, height, color)
 end
 
 function createPaddle()
-    paddle = Paddle.new(
-        CENTER_X - PADDLE_WIDTH / 2,
-        WINDOW_HEIGHT - (PADDLE_HEIGHT * 2), -- Position the paddle near the bottom
-        PADDLE_WIDTH,
-        PADDLE_HEIGHT,
-        { 255, 255, 255 } -- White color
-    )
+    paddle =
+        Paddle.new(CENTER_X - PADDLE_WIDTH / 2, WINDOW_HEIGHT - (PADDLE_HEIGHT * 2), -- Position the paddle near the bottom
+            PADDLE_WIDTH, PADDLE_HEIGHT, {255, 255, 255} -- White color
+        )
 end
 
 function Paddle:move(elapsed_time)
@@ -232,16 +233,16 @@ function Paddle:handle_input()
         self.dx = -1
     elseif GAME_ENGINE:IsKeyDown(VK_RIGHT) then
         self.dx = 1
-    elseif true then
-        game_won = true
+        -- elseif true then
+        --    game_won = true
     else
         self.dx = 0
     end
 end
 
 function Paddle:check_collision_with_ball(ball)
-    if ball.x + ball.radius > self.x and ball.x - ball.radius < self.x + self.width and
-        ball.y + ball.radius > self.y and ball.y - ball.radius < self.y + self.height then
+    if ball.x + ball.radius > self.x and ball.x - ball.radius < self.x + self.width and ball.y + ball.radius > self.y and
+        ball.y - ball.radius < self.y + self.height then
         ball.dy = -ball.dy
 
         local hit_position = (ball.x - self.x) / self.width
@@ -260,18 +261,18 @@ function displayVictoryMessage()
     GAME_ENGINE:DrawString(message, x, y)
 
     ----TODO: DEBUG
-    --GAME_ENGINE:SetColor(RGB(255, 0, 0))
-    --x1 = 0
-    --y1 = math.floor(WINDOW_HEIGHT / 2)
-    --width1 = math.floor(WINDOW_WIDTH)
-    --height1 = math.floor(WINDOW_HEIGHT / 2)
+    -- GAME_ENGINE:SetColor(RGB(255, 0, 0))
+    -- x1 = 0
+    -- y1 = math.floor(WINDOW_HEIGHT / 2)
+    -- width1 = math.floor(WINDOW_WIDTH)
+    -- height1 = math.floor(WINDOW_HEIGHT / 2)
     --
-    --x2 = math.floor(WINDOW_WIDTH / 2)
-    --y2 = 0
-    --width2 = math.floor(WINDOW_WIDTH / 2)
-    --height2 = math.floor(WINDOW_HEIGHT)
-    --GAME_ENGINE:DrawLine(x1, y1, width1, height1)
-    --GAME_ENGINE:DrawLine(x2, y2, width2, height2)
+    -- x2 = math.floor(WINDOW_WIDTH / 2)
+    -- y2 = 0
+    -- width2 = math.floor(WINDOW_WIDTH / 2)
+    -- height2 = math.floor(WINDOW_HEIGHT)
+    -- GAME_ENGINE:DrawLine(x1, y1, width1, height1)
+    -- GAME_ENGINE:DrawLine(x2, y2, width2, height2)
 end
 
 function checkVictory()
@@ -287,12 +288,8 @@ end
 
 -- ____________________________________________________________________________________________________________________
 
-local BackgroundSound = Audio.new("paddle.mp3")
 function initialize()
     initializeWindow()
-
-    BackgroundSound:Play()
-    print("Background sound started")
 end
 
 function start()
@@ -314,7 +311,9 @@ function paint()
 end
 
 function soundsTick()
-    BackgroundSound:Tick()
+    paddleSound:Tick()
+    wallSound:Tick()
+    breakBlockSound:Tick()
 end
 
 function tick()
@@ -332,5 +331,12 @@ function tick()
     ball:check_collision_with_blocks()
 
     soundsTick()
-    print("Tick")
+end
+
+---@param key number
+function key_pressed(key)
+    print("Key pressed: " .. key)
+    if key == VK_LEFT then
+        print("Left key pressed")
+    end
 end
