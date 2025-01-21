@@ -23,6 +23,12 @@ set(ENGINE_FILES
         src/GameWinMain.cpp
         src/GameWinMain.h
 )
+set(ENGINE_SOURCE_FILES
+        src/resource.h
+        src/Game.rc
+        src/small.ico
+        src/big.ico
+)
 
 set(GAME_FILES
         src/Game.cpp
@@ -32,10 +38,6 @@ set(GAME_FILES
 file(GLOB LUA_FILES lua/*.lua)
 
 set(RESOURCE_FILES
-        src/resource.h
-        src/Game.rc
-        src/small.ico
-        src/big.ico
         src/paddle.mp3
         src/breakBlock.mp3
         src/wall.mp3
@@ -45,6 +47,7 @@ set(RESOURCE_FILES
 set(ALL_FILES
         ${LUA_FILES}
         ${ENGINE_FILES}
+        ${ENGINE_SOURCE_FILES}
         ${GAME_FILES}
         ${RESOURCE_FILES}
 )
@@ -54,6 +57,7 @@ add_executable(${PROJECT_NAME} ${ALL_FILES})
 
 # Source groups for filters
 source_group("Engine Files" FILES ${ENGINE_FILES})
+source_group("Engine Files\\Source Files" FILES ${ENGINE_SOURCE_FILES})
 source_group("Game Files" FILES ${GAME_FILES})
 source_group("Game Files\\Lua" FILES ${LUA_FILES})
 source_group("Resource Files" FILES ${RESOURCE_FILES})

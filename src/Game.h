@@ -10,7 +10,7 @@
 //-----------------------------------------------------------------
 #include <sol/sol.hpp>
 
-#include "Resource.h"	
+#include "Resource.h"
 #include "GameEngine.h"
 #include "AbstractGame.h"
 
@@ -54,54 +54,13 @@ private:
 	/// <summary>
 	/// PRIVATE FUNCTIONS
 	/// </summary>
-	inline void ShowWarning(const tstring& message)
-	{
-		GAME_ENGINE->MessageBox(message);
-	}
-	inline void WhatVersion()
-	{
-	#if defined(_DEBUG)
-	#if defined(_WIN64)
-		OutputDebugString(_T("Running in x64 Debug mode"));
-	#else
-		OutputDebugString(_T("Running in x86 Debug mode"));
-	#endif
-	#else
-	#if defined(_WIN64)
-		OutputDebugString(_T("Running in x64 Release mode"));
-	#else
-		OutputDebugString(_T("Running in x86 Release mode"));
-	#endif
-	#endif
-	}
-	inline void WhatFile(const std::string& scriptName)
-	{
-		std::ifstream file(scriptName);
-		auto tScriptName = std::basic_string<TCHAR>(scriptName.begin(), scriptName.end());
-		if (file.is_open())
-		{
-			OutputDebugString(_T("File ") + tScriptName + _T(" exists."));
-			file.close();
-		}
-		else
-		{
-			ShowWarning(_T("File ") + tScriptName + _T(" does not exist."));
-		}
-	}
-	inline void SetScript(const std::string& scriptName) 
-	{
-		m_ScriptName = scriptName; 
-	}
-
 	void LuaParseScript();
 	void BindLuaFunctions();
 	void BindCppFunctions();
-	void TestLua(const std::basic_string<TCHAR>& scriptName);
 	// -------------------------
 	// Datamembers
 	// -------------------------
 	std::unique_ptr<Audio> m_AudioPtr{};
-	std::string m_ScriptName{};
 
 	sol::state lua; // Lua state
 	sol::function lua_initialize;

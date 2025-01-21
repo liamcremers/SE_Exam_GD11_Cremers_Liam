@@ -1728,7 +1728,6 @@ Audio::~Audio()
 
 void Audio::Play(int msecStart, int msecStop)
 {
-    std::cout<<"Audio::Play"<<std::endl;
     if (!m_Playing)
     {
         m_Playing = true;

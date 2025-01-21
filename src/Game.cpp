@@ -15,8 +15,7 @@ namespace fs = std::filesystem;
 
 #include "Game.h"
 
-extern "C"
-{
+extern "C" {
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
@@ -26,22 +25,22 @@ static void AllocateConsole()
 {
     if (AllocConsole()) // Allocate a new console for the application
     {
-        FILE *fp; // Redirect STDOUT to the console
+        FILE* fp; // Redirect STDOUT to the console
         freopen_s(&fp, "CONOUT$", "w", stdout);
         setvbuf(stdout, nullptr, _IONBF, 0); // Disable buffering for stdout
 
         freopen_s(&fp, "CONOUT$", "w", stderr); // Redirect STDERR to the console
-        setvbuf(stderr, nullptr, _IONBF, 0);    // Disable buffering for stderr
+        setvbuf(stderr, nullptr, _IONBF, 0); // Disable buffering for stderr
 
         freopen_s(&fp, "CONIN$", "r", stdin); // Redirect STDIN to the console
-        setvbuf(stdin, nullptr, _IONBF, 0);   // Disable buffering for stdin
+        setvbuf(stdin, nullptr, _IONBF, 0); // Disable buffering for stdin
 
         std::ios::sync_with_stdio(true); // Sync C++ streams with the console
     }
 }
 
 // https://sol2.readthedocs.io/en/latest/exceptions.html#exception-handling
-int my_exception_handler(lua_State *L, sol::optional<const std::exception &> maybe_exception,
+int my_exception_handler(lua_State* L, sol::optional<const std::exception&> maybe_exception,
                          sol::string_view description)
 {
     // L is the lua state, which you can wrap in a state_view if necessary
@@ -51,7 +50,7 @@ int my_exception_handler(lua_State *L, sol::optional<const std::exception &> may
     if (maybe_exception)
     {
         std::cout << "(straight from the exception): ";
-        const std::exception &ex = *maybe_exception;
+        const std::exception& ex = *maybe_exception;
         std::cout << ex.what() << std::endl;
     }
     else
@@ -141,7 +140,7 @@ void Game::KeyPressed(TCHAR key)
     }
 }
 
-void Game::CallAction(Caller *callerPtr)
+void Game::CallAction(Caller* callerPtr)
 {
     /* if (lua_call_action.valid())lua_call_action(callerPtr->GetType());*/
 }
@@ -157,10 +156,10 @@ void Game::LuaParseScript()
         lua.open_libraries(); // open everything
         lua.set_exception_handler(&my_exception_handler);
 
-        std::string scriptName = "script_breakout.lua";
+        std::string scriptName = "script_snake.lua";
 
         int argc;
-        LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+        LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
         if (argc == 2)
         {
             const fs::path scriptPath(argv[1]);
@@ -175,17 +174,16 @@ void Game::LuaParseScript()
 
         BindCppFunctions();
 
-        SetScript(scriptName);
         lua.script_file(scriptName);
 
         BindLuaFunctions();
         std::cout << ("Lua script loaded successfully\n") << std::endl;
     }
-    catch ([[maybe_unused]] const sol::error &e)
+    catch ([[maybe_unused]] const sol::error& e)
     {
         std::cerr << ("Lua Error: ") << std::endl;
     }
-    catch ([[maybe_unused]] const std::exception &e)
+    catch ([[maybe_unused]] const std::exception& e)
     {
         std::cerr << ("Exception: ") << std::endl;
     }
@@ -214,15 +212,14 @@ void Game::BindLuaFunctions()
 
 void Game::BindCppFunctions()
 {
-    lua["RGB"] = [](int r, int g, int b)
-    { return RGB(r, g, b); };
+    lua["RGB"] = [](int r, int g, int b) { return RGB(r, g, b); };
 
     lua.new_usertype<SIZE>("SIZE",
                            sol::constructors<SIZE(LONG, LONG), SIZE()>(),
                            "cx", &SIZE::cx,
                            "cy", &SIZE::cy);
     lua.new_usertype<POINT>("POINT",
-                            sol::constructors<POINT(double, double), POINT()>(),
+                            sol::constructors<POINT(LONG, LONG), POINT()>(),
                             "x", &POINT::x,
                             "y", &POINT::y);
     lua.new_usertype<RECT>("RECT",
@@ -231,7 +228,7 @@ void Game::BindCppFunctions()
                            "top", &RECT::top,
                            "right", &RECT::right,
                            "bottom", &RECT::bottom);
-    lua.new_usertype<Bitmap>("Bitmap", sol::constructors<Bitmap(const tstring &)>(),
+    lua.new_usertype<Bitmap>("Bitmap", sol::constructors<Bitmap(const tstring&)>(),
                              "SetTransparencyColor", &Bitmap::SetTransparencyColor,
                              "SetOpacity", &Bitmap::SetOpacity,
                              "Exists", &Bitmap::Exists,
@@ -242,7 +239,7 @@ void Game::BindCppFunctions()
                              "HasAlphaChannel", &Bitmap::HasAlphaChannel,
                              "SaveToFile", &Bitmap::SaveToFile,
                              "GetHandle", &Bitmap::GetHandle);
-    lua.new_usertype<Font>("Font", sol::constructors<Font(const tstring &, bool, bool, bool, int)>());
+    lua.new_usertype<Font>("Font", sol::constructors<Font(const tstring&, bool, bool, bool, int)>());
     lua.new_usertype<GameEngine>(
         "GAME_ENGINE", sol::no_constructor,
         "SetTitle", &GameEngine::SetTitle,
@@ -259,23 +256,36 @@ void Game::BindCppFunctions()
         "HasWindowRegion", &GameEngine::HasWindowRegion,
         "IsFullscreen", &GameEngine::IsFullscreen,
         "IsKeyDown", &GameEngine::IsKeyDown,
-        "MessageBox", sol::overload(static_cast<void (GameEngine::*)(const tstring &) const>(&GameEngine::MessageBox), sol::resolve<void(int) const>(&GameEngine::MessageBox<int>), sol::resolve<void(double) const>(&GameEngine::MessageBox<double>), sol::resolve<void(bool) const>(&GameEngine::MessageBox<bool>)),
+        "MessageBox", sol::overload(static_cast<void (GameEngine::*)(const tstring&) const>(&GameEngine::MessageBox),
+                                    sol::resolve<void(int) const>(&GameEngine::MessageBox<int>),
+                                    sol::resolve<void(double) const>(&GameEngine::MessageBox<double>),
+                                    sol::resolve<void(bool) const>(&GameEngine::MessageBox<bool>)),
         "MessageContinue", &GameEngine::MessageContinue,
-        "CalculateTextDimensions", sol::overload(sol::resolve<SIZE(const tstring &, const Font *) const>(&GameEngine::CalculateTextDimensions), sol::resolve<SIZE(const tstring &, const Font *, RECT) const>(&GameEngine::CalculateTextDimensions)),
+        "CalculateTextDimensions",
+        sol::overload(sol::resolve<SIZE(const tstring&, const Font*) const>(&GameEngine::CalculateTextDimensions),
+                      sol::resolve<SIZE(const tstring&, const Font*, RECT) const>(
+                          &GameEngine::CalculateTextDimensions)),
         "SetColor", &GameEngine::SetColor,
         "SetFont", &GameEngine::SetFont,
         "FillWindowRect", &GameEngine::FillWindowRect,
         "DrawLine", &GameEngine::DrawLine,
         "DrawRect", &GameEngine::DrawRect,
-        "FillRect", sol::overload(sol::resolve<bool(int, int, int, int) const>(&GameEngine::FillRect), sol::resolve<bool(int, int, int, int, int) const>(&GameEngine::FillRect)),
+        "FillRect", sol::overload(sol::resolve<bool(int, int, int, int) const>(&GameEngine::FillRect),
+                                  sol::resolve<bool(int, int, int, int, int) const>(&GameEngine::FillRect)),
         "DrawOval", &GameEngine::DrawOval,
-        "FillOval", sol::overload(sol::resolve<bool(int, int, int, int) const>(&GameEngine::FillOval), sol::resolve<bool(int, int, int, int, int) const>(&GameEngine::FillOval)),
+        "FillOval", sol::overload(sol::resolve<bool(int, int, int, int) const>(&GameEngine::FillOval),
+                                  sol::resolve<bool(int, int, int, int, int) const>(&GameEngine::FillOval)),
         "DrawArc", &GameEngine::DrawArc,
         "FillArc", &GameEngine::FillArc,
-        "DrawString", sol::overload(sol::resolve<int(const tstring &, int, int) const>(&GameEngine::DrawString), sol::resolve<int(const tstring &, int, int, int, int) const>(&GameEngine::DrawString)),
-        "DrawBitmap", sol::overload(sol::resolve<bool(const Bitmap *, int, int) const>(&GameEngine::DrawBitmap), sol::resolve<bool(const Bitmap *, int, int, RECT) const>(&GameEngine::DrawBitmap)),
-        "DrawPolygon", sol::overload(sol::resolve<bool(const POINT[], int) const>(&GameEngine::DrawPolygon), sol::resolve<bool(const POINT[], int, bool) const>(&GameEngine::DrawPolygon)),
-        "FillPolygon", sol::overload(sol::resolve<bool(const POINT[], int) const>(&GameEngine::FillPolygon), sol::resolve<bool(const POINT[], int, bool) const>(&GameEngine::FillPolygon)),
+        "DrawString", sol::overload(sol::resolve<int(const tstring&, int, int) const>(&GameEngine::DrawString),
+                                    sol::resolve<int
+                                        (const tstring&, int, int, int, int) const>(&GameEngine::DrawString)),
+        "DrawBitmap", sol::overload(sol::resolve<bool(const Bitmap*, int, int) const>(&GameEngine::DrawBitmap),
+                                    sol::resolve<bool(const Bitmap*, int, int, RECT) const>(&GameEngine::DrawBitmap)),
+        "DrawPolygon", sol::overload(sol::resolve<bool(const POINT [], int) const>(&GameEngine::DrawPolygon),
+                                     sol::resolve<bool(const POINT [], int, bool) const>(&GameEngine::DrawPolygon)),
+        "FillPolygon", sol::overload(sol::resolve<bool(const POINT [], int) const>(&GameEngine::FillPolygon),
+                                     sol::resolve<bool(const POINT [], int, bool) const>(&GameEngine::FillPolygon)),
         "GetDrawColor", &GameEngine::GetDrawColor,
         "Repaint", &GameEngine::Repaint,
         "GetTitle", &GameEngine::GetTitle,
@@ -289,12 +299,18 @@ void Game::BindCppFunctions()
     lua["GAME_ENGINE"] = GAME_ENGINE;
 
     lua.new_usertype<Audio>(
-        "Audio", sol::constructors<Audio(const tstring &)>(),
+        "Audio", sol::constructors<Audio(const tstring&)>(),
         "Tick", &Audio::Tick,
-        "Play", sol::overload([](Audio &audio)
-                              { audio.Play(); }, [](Audio &audio, int msecStart)
-                              { audio.Play(msecStart); }, [](Audio &audio, int msecStart, int msecStop)
-                              { audio.Play(msecStart, msecStop); }),
+        "Play", sol::overload([](Audio& audio)
+                              {
+                                  audio.Play();
+                              }, [](Audio& audio, int msecStart)
+                              {
+                                  audio.Play(msecStart);
+                              }, [](Audio& audio, int msecStart, int msecStop)
+                              {
+                                  audio.Play(msecStart, msecStop);
+                              }),
         "Pause", &Audio::Pause,
         "Stop", &Audio::Stop,
         "SetVolume", &Audio::SetVolume,
@@ -309,40 +325,20 @@ void Game::BindCppFunctions()
         "GetVolume", &Audio::GetVolume,
         "GetType", &Audio::GetType);
 
+    lua.new_enum<HitRegion::Shape>("Shape",
+                                   {
+                                       {"RECTANGLE", HitRegion::Shape::Ellipse},
+                                       {"ELLIPSE", HitRegion::Shape::Rectangle}
+                                   });
     lua.new_usertype<HitRegion>(
-        "HitRegion", sol::constructors<HitRegion(HitRegion::Shape, int, int, int, int), HitRegion(const POINT *, int), HitRegion(const Bitmap *, COLORREF, COLORREF)>(),
+        "HitRegion",
+        sol::constructors<HitRegion(HitRegion::Shape, int, int, int, int), HitRegion(const POINT*, int), HitRegion(
+                              const Bitmap*, COLORREF, COLORREF)>(),
         "Move", &HitRegion::Move,
-        "HitTest", sol::overload(sol::resolve<bool(int, int) const>(&HitRegion::HitTest), sol::resolve<bool(const HitRegion *) const>(&HitRegion::HitTest)),
+        "HitTest", sol::overload(sol::resolve<bool(int, int) const>(&HitRegion::HitTest),
+                                 sol::resolve<bool(const HitRegion*) const>(&HitRegion::HitTest)),
         "CollisionTest", &HitRegion::CollisionTest,
         "GetBounds", &HitRegion::GetBounds,
         "Exists", &HitRegion::Exists,
         "GetHandle", &HitRegion::GetHandle);
-}
-
-void Game::TestLua(const std::basic_string<TCHAR> &scriptName)
-{
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L); // Open Lua standard libraries
-    // Load the Lua script
-    if (luaL_dofile(L, std::string(scriptName.begin(), scriptName.end()).c_str()) != LUA_OK)
-    {
-        ShowWarning(_T("Error loading Lua script"));
-        lua_close(L);
-        return;
-    }
-    // Retrieve the message from Lua
-    lua_getglobal(L, "message");
-    if (lua_isstring(L, -1))
-    {
-        const char *message = lua_tostring(L, -1);
-        // Convert message to TCHAR and show it
-        auto tmessage = std::basic_string<TCHAR>(message, message + strlen(message));
-        ShowWarning(tmessage); // This assumes you're using _UNICODE
-    }
-    else
-    {
-        ShowWarning(_T("Lua script did not define 'message'"));
-    }
-    // Clean up Lua
-    lua_close(L);
 }

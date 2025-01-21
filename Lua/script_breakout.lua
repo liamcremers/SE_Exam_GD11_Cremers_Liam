@@ -1,10 +1,9 @@
 local game_won = false
--- TODO: game_won needs to be placed in another place in my file because it looks stupid here but also anywhere else it breaks the code
 local lives = 3
 local current_level = 1
-local paddleSound = Audio.new("paddle.mp3")
-local wallSound = Audio.new("breakBlock.mp3")
-local breakBlockSound = Audio.new("breakBlock.mp3")
+--local paddleSound = Audio.new("paddle.mp3")
+--local wallSound = Audio.new("breakBlock.mp3")
+--local breakBlockSound = Audio.new("breakBlock.mp3")
 function loseLife()
     lives = lives - 1
     if lives <= 0 then
@@ -45,7 +44,7 @@ end
 
 local WINDOW_WIDTH = 640
 local WINDOW_HEIGHT = 560
-local WINDOW_FPS = 120
+local WINDOW_FPS = 240
 local WINDOW_FONT = Font.new("Press Start 2P", false, false, false, 64)
 function initializeWindow()
     GAME_ENGINE:SetTitle("Breakout")
@@ -135,17 +134,13 @@ function Ball:move(elapsed_time)
     if self.x - self.radius < 0 or self.x + self.radius > WINDOW_WIDTH then
         self.dx = -self.dx
         self.x = math.max(self.radius, math.min(self.x, WINDOW_WIDTH - self.radius))
-        if (wallSound:IsPlaying() == false) then
-            wallSound:Play()
-        end
+        --wallSound:Play()
     end
 
     if self.y - self.radius < 0 then
         self.dy = -self.dy
         self.y = math.max(self.radius, math.min(self.y, WINDOW_HEIGHT - self.radius))
-        if (wallSound:IsPlaying() == false) then
-            wallSound:Play()
-        end
+        --wallSound:Play()
     elseif self.y + self.radius > WINDOW_HEIGHT then
         loseLife()
     end
@@ -177,6 +172,7 @@ function Ball:check_collision_with_blocks()
 
                 -- Remove the block by setting it to `nil`
                 row[colIndex] = nil
+                --breakBlockSound:Play()
                 if checkVictory() then
                     game_won = true
                 end
@@ -233,8 +229,6 @@ function Paddle:handle_input()
         self.dx = -1
     elseif GAME_ENGINE:IsKeyDown(VK_RIGHT) then
         self.dx = 1
-        -- elseif true then
-        --    game_won = true
     else
         self.dx = 0
     end
@@ -247,7 +241,15 @@ function Paddle:check_collision_with_ball(ball)
 
         local hit_position = (ball.x - self.x) / self.width
         ball.dx = (hit_position - 0.5) * 2 -- Normalize to range [-1, 1]
+
+        --paddleSound:Play()
     end
+end
+
+function AddKeyListKeys()
+    -- string.char(VK_LEFT) 
+    keyList = "R"
+    GAME_ENGINE:SetKeyList(keyList)
 end
 
 function displayVictoryMessage()
@@ -290,6 +292,7 @@ end
 
 function initialize()
     initializeWindow()
+    AddKeyListKeys()
 end
 
 function start()
@@ -311,9 +314,9 @@ function paint()
 end
 
 function soundsTick()
-    paddleSound:Tick()
-    wallSound:Tick()
-    breakBlockSound:Tick()
+    --paddleSound:Tick()
+    --wallSound:Tick()
+    --breakBlockSound:Tick()
 end
 
 function tick()
@@ -330,13 +333,11 @@ function tick()
     ball:move(elapsed_time)
     ball:check_collision_with_blocks()
 
-    soundsTick()
+    --soundsTick()
 end
 
----@param key number
 function key_pressed(key)
-    print("Key pressed: " .. key)
-    if key == VK_LEFT then
-        print("Left key pressed")
+    if key == string.byte("R") then
+        hardResetGame()
     end
 end

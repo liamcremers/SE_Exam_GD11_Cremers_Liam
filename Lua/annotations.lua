@@ -1,5 +1,6 @@
 ---@meta
 
+---@class RGB
 ---@param r number
 ---@param g number
 ---@param b number
@@ -113,7 +114,7 @@ function GAME_ENGINE:HasWindowRegion() end
 ---@return boolean
 function GAME_ENGINE:IsFullscreen() end
 
----@param key key
+---@param key number
 ---@return boolean
 function GAME_ENGINE:IsKeyDown(key) end
 
@@ -153,6 +154,10 @@ function GAME_ENGINE:DrawLine(x1, y1, x2, y2) end
 ---@return boolean
 function GAME_ENGINE:DrawRect(left, top, right, bottom) end
 
+---@param left number
+---@param top number
+---@param right number
+---@param bottom number
 ---@overload fun(left: number, top: number, right: number, bottom: number, opacity: number): boolean
 function GAME_ENGINE:FillRect(left, top, right, bottom) end
 
@@ -179,6 +184,11 @@ function GAME_ENGINE:FillRoundRect(left, top, right, bottom, radius) end
 ---@return boolean
 function GAME_ENGINE:DrawOval(left, top, right, bottom) end
 
+---@param left number
+---@param top number
+---@param right number
+---@param bottom number
+---@param opacity number
 ---@overload fun(left: number, top: number, right: number, bottom: number, opacity: number): boolean
 function GAME_ENGINE:FillOval(left, top, right, bottom) end
 
@@ -215,7 +225,7 @@ function GAME_ENGINE:FillPolygon(points, count) end
 ---@return RGB
 function GAME_ENGINE:GetDrawColor() end
 
----@return bool
+---@return boolean
 function GAME_ENGINE:Repaint() end
 
 ---@return string
@@ -306,3 +316,74 @@ function Audio:GetVolume() end
 --- Gets the type of the audio (e.g., "mp3", "wav").
 ---@return string The type/format of the audio file.
 function Audio:GetType() end
+
+---@enum HitRegionShape
+---@field Ellipse number
+---@field Rectangle number
+HitRegionShape = {
+    Ellipse = 0,
+    Rectangle = 1
+}
+
+---@class HitRegion
+HitRegion = {}
+
+---@param shape HitRegionShape
+---@param left number
+---@param top number
+---@param right number
+---@param bottom number
+---@return HitRegion
+function HitRegion.new(shape, left, top, right, bottom) end
+
+---@param dx number
+---@param dy number
+function HitRegion:Move(dx, dy) end
+
+---@overload fun(x: number, y: number): boolean
+---@overload fun(region: HitRegion): boolean
+function HitRegion:HitTest(...) end
+
+---@param other HitRegion
+---@return boolean
+function HitRegion:CollisionTest(other) end
+
+---@return RECT
+function HitRegion:GetBounds()
+    return RECT.new(self.left, self.top, self.right, self.bottom)
+end
+
+---@return boolean
+function HitRegion:Exists() end
+
+---@return any
+function HitRegion:GetHandle() end
+    
+-- #################################################################
+-- # Game Loop Functions
+-- #################################################################
+function initialize() end
+function start() end
+function endGame() end
+---@param rect RECT
+function paint(rect) end
+function tick() end
+---@param isLeft boolean
+---@param isDown boolean
+---@param x number
+---@param y number
+function mouseButtonAction(isLeft, isDown, x, y, wParam) end
+---@param x number
+---@param y number
+---@param distance number
+---@param wParam number
+function mouseWheelAction(x, y, distance, wParam) end
+---@param x number
+---@param y number
+---@param wParam number
+function mouseMove(x, y, wParam) end
+function checkKeyboard() end
+---@param key string
+function keyPressed(key) end
+---@param callerPtr any
+function callAction(callerPtr) end
