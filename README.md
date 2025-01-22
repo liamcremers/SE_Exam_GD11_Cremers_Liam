@@ -18,9 +18,18 @@ This project is an exam assignment for the Game Development / Software Engineeri
 - A zipped package with the following structure:
   - `SE_Exam_GD11_Cremers_Liam.rar`
   - **Contents**:
+  - `Game`: Release build, Lua scripts, and all dependencies/resources.
+  - `Project` Project folder (includes project source files)
     - `src`: Source files and project structure.
     - `Game`: Release build, Lua scripts, and all dependencies/resources.
+    - `Lua`: Lua files are kept in a seperate folder
     - `cmake`: Cmake files to enhance the clarity of my CMakeLists.txt
+    - `NOTE`: in my cmake is used the following source_groups to keep a good looking structure in 'Visual Studio' specific
+      - `Engine Files`: Here are the files used in Kevin's Engine except for Game.cpp and Game.h
+        - `Source Files`: Source Files included with Kevin's Engine
+      - `Game Files`: Game.h & Game.cpp
+        - `Lua`: All Lua-files found in Lua folder in Project
+      -`Resource Files`: Resources used specifically for the game
 
 ## How to Run
 1. Unzip the provided package.
