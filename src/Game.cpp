@@ -21,6 +21,7 @@ extern "C" {
 #include "lauxlib.h"
 }
 
+#ifdef _DEBUG
 static void AllocateConsole()
 {
     if (AllocConsole()) // Allocate a new console for the application
@@ -66,6 +67,7 @@ int my_exception_handler(lua_State* L, sol::optional<const std::exception&> mayb
     // so we push a single string (in our case, the description of the error)
     return sol::stack::push(L, description);
 }
+#endif
 
 //-----------------------------------------------------------------
 // Game Member Functions
@@ -79,7 +81,9 @@ Game::~Game() = default;
 
 void Game::Initialize()
 {
+#ifdef _DEBUG
     AllocateConsole(); // TODO: don't call this in release
+#endif
     LuaParseScript();
 
     if (lua_initialize.valid())
@@ -154,9 +158,10 @@ void Game::LuaParseScript()
     {
         luaL_openlibs(lua.lua_state());
         lua.open_libraries(); // open everything
+#ifdef _DEBUG
         lua.set_exception_handler(&my_exception_handler);
-
-        std::string scriptName = "script_snake.lua";
+#endif
+        std::string scriptName = "script_breakout.lua";
 
         int argc;
         LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);

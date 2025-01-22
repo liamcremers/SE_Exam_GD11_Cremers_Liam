@@ -1,52 +1,18 @@
+-- TODO: display amount of lives
 local game_won = false
+local game_over = false
 local lives = 3
-local current_level = 1
---local paddleSound = Audio.new("paddle.mp3")
---local wallSound = Audio.new("breakBlock.mp3")
---local breakBlockSound = Audio.new("breakBlock.mp3")
-function loseLife()
-    lives = lives - 1
-    if lives <= 0 then
-        gameOver()
-    else
-        resetGame()
-    end
-end
-
-function resetGame()
-    -- Reset ball position and direction
-    createBall()
-
-    -- Reset paddle position
-    createPaddle()
-
-    print("Lives remaining: " .. lives)
-    print("Level: " .. current_level)
-end
-
-function hardResetGame()
-    createBall()
-    createPaddle()
-    createBreakoutBlocks()
-
-    print("Lives remaining: " .. lives)
-    print("Level: " .. current_level)
-end
-
-function gameOver()
-    print("Game Over!")
-    -- Display game over message or reset the game entirely
-    lives = 3
-    current_level = 1
-
-    hardResetGame()
-end
+local score = 0
+local paddleSound = Audio.new("paddle.mp3")
+local wallSound = Audio.new("breakBlock.mp3")
+local breakBlockSound = Audio.new("breakBlock.mp3")
 
 local WINDOW_WIDTH = 640
 local WINDOW_HEIGHT = 560
 local WINDOW_FPS = 240
 local WINDOW_FONT = Font.new("Press Start 2P", false, false, false, 64)
-function initializeWindow()
+local LIVES_FONT = Font.new("Press Start 2P", false, false, false, 11)
+local function initializeWindow()
     GAME_ENGINE:SetTitle("Breakout")
     GAME_ENGINE:SetWidth(WINDOW_WIDTH);
     GAME_ENGINE:SetHeight(WINDOW_HEIGHT);
@@ -55,7 +21,7 @@ function initializeWindow()
 end
 
 local blocks = {}
-function createBreakoutBlocks()
+local function createBreakoutBlocks()
     local red = {255, 0, 0}
     local orange = {255, 165, 0}
     local yellow = {255, 255, 0}
@@ -70,8 +36,6 @@ function createBreakoutBlocks()
     local margin = 4
     local halfMargin = 2
 
-    -- print("Creating breakout blocks...")
-
     for colorIndex, color in ipairs(colors) do
         blocks[colorIndex] = {}
         for i = 1, 10 do
@@ -82,12 +46,11 @@ function createBreakoutBlocks()
                 color = color
             }
             blocks[colorIndex][i] = block
-            -- print(string.format("Block created: Row %d, Col %d, Color (%d, %d, %d)", colorIndex, i, color[1], color[2], color[3]))
         end
     end
 end
 
-function drawBreakoutBlocks()
+local function drawBreakoutBlocks()
     for _, colorRow in pairs(blocks) do
         -- Use `pairs` to iterate over all rows
         for _, block in pairs(colorRow) do
@@ -115,7 +78,7 @@ function Ball.new(x, y, radius, color, dx, dy)
     return self
 end
 
-function createBall()
+local function createBall()
     ball = Ball.new(CENTER_X, CENTER_Y, RADIUS, {255, 255, 255}, -- White color
     math.random(2) == 1 and -1 or 1, -- Random x direction
     -1)
@@ -134,13 +97,13 @@ function Ball:move(elapsed_time)
     if self.x - self.radius < 0 or self.x + self.radius > WINDOW_WIDTH then
         self.dx = -self.dx
         self.x = math.max(self.radius, math.min(self.x, WINDOW_WIDTH - self.radius))
-        --wallSound:Play()
+        wallSound:Play()
     end
 
     if self.y - self.radius < 0 then
         self.dy = -self.dy
         self.y = math.max(self.radius, math.min(self.y, WINDOW_HEIGHT - self.radius))
-        --wallSound:Play()
+        wallSound:Play()
     elseif self.y + self.radius > WINDOW_HEIGHT then
         loseLife()
     end
@@ -172,10 +135,11 @@ function Ball:check_collision_with_blocks()
 
                 -- Remove the block by setting it to `nil`
                 row[colIndex] = nil
-                --breakBlockSound:Play()
+                breakBlockSound:Play()
                 if checkVictory() then
                     game_won = true
                 end
+                score = score + math.abs(_-6)+1
 
                 -- Break out of the loops since the ball can only hit one block at a time
                 return
@@ -202,7 +166,7 @@ function Paddle.new(x, y, width, height, color)
     return self
 end
 
-function createPaddle()
+local function createPaddle()
     paddle =
         Paddle.new(CENTER_X - PADDLE_WIDTH / 2, WINDOW_HEIGHT - (PADDLE_HEIGHT * 2), -- Position the paddle near the bottom
             PADDLE_WIDTH, PADDLE_HEIGHT, {255, 255, 255} -- White color
@@ -242,17 +206,17 @@ function Paddle:check_collision_with_ball(ball)
         local hit_position = (ball.x - self.x) / self.width
         ball.dx = (hit_position - 0.5) * 2 -- Normalize to range [-1, 1]
 
-        --paddleSound:Play()
+        paddleSound:Play()
     end
 end
 
-function AddKeyListKeys()
-    -- string.char(VK_LEFT) 
+local function AddKeyListKeys()
     keyList = "R"
     GAME_ENGINE:SetKeyList(keyList)
 end
 
-function displayVictoryMessage()
+local function displayVictoryMessage()
+    GAME_ENGINE:SetFont(WINDOW_FONT)
     GAME_ENGINE:SetColor(RGB(255, 255, 255))
     message = "You Won!"
     Dimensions = GAME_ENGINE:CalculateTextDimensions(message, WINDOW_FONT)
@@ -261,20 +225,26 @@ function displayVictoryMessage()
     x = math.floor((WINDOW_WIDTH / 2) - textWidth / 2)
     y = math.floor((WINDOW_HEIGHT / 2) - textHeight / 2)
     GAME_ENGINE:DrawString(message, x, y)
+end
 
-    ----TODO: DEBUG
-    -- GAME_ENGINE:SetColor(RGB(255, 0, 0))
-    -- x1 = 0
-    -- y1 = math.floor(WINDOW_HEIGHT / 2)
-    -- width1 = math.floor(WINDOW_WIDTH)
-    -- height1 = math.floor(WINDOW_HEIGHT / 2)
-    --
-    -- x2 = math.floor(WINDOW_WIDTH / 2)
-    -- y2 = 0
-    -- width2 = math.floor(WINDOW_WIDTH / 2)
-    -- height2 = math.floor(WINDOW_HEIGHT)
-    -- GAME_ENGINE:DrawLine(x1, y1, width1, height1)
-    -- GAME_ENGINE:DrawLine(x2, y2, width2, height2)
+local function displayGameOverMessage()
+    GAME_ENGINE:SetFont(WINDOW_FONT)
+    GAME_ENGINE:SetColor(RGB(255, 255, 255))
+    message = "GAME OVER!!!!"
+    Dimensions = GAME_ENGINE:CalculateTextDimensions(message, WINDOW_FONT)
+    textWidth = Dimensions.cx
+    textHeight = Dimensions.cy
+    x = math.floor((WINDOW_WIDTH / 2) - textWidth / 2)
+    y = math.floor((WINDOW_HEIGHT / 2) - textHeight / 2)
+    GAME_ENGINE:DrawString(message, x, y)
+
+    message = "Press R to restart"
+    Dimensions = GAME_ENGINE:CalculateTextDimensions(message, WINDOW_FONT)
+    textWidth = Dimensions.cx
+    textHeight = Dimensions.cy
+    x = math.floor((WINDOW_WIDTH / 2) - textWidth / 2)
+    y = math.floor((WINDOW_HEIGHT / 2) - textHeight / 2) + textHeight
+    GAME_ENGINE:DrawString(message, x, y)
 end
 
 function checkVictory()
@@ -286,6 +256,34 @@ function checkVictory()
         end
     end
     return true -- No blocks found, player has won
+end
+
+local function resetGame()
+    createBall()
+    createPaddle()
+end
+
+local function hardResetGame()
+    game_over = false
+    game_won = false
+    lives = 3
+    score = 0
+    createBall()
+    createPaddle()
+    createBreakoutBlocks()
+end
+
+function gameOver()
+    game_over = true
+end
+
+function loseLife()
+    lives = lives - 1
+    if lives <= 0 then
+        gameOver()
+    else
+        resetGame()
+    end
 end
 
 -- ____________________________________________________________________________________________________________________
@@ -306,17 +304,24 @@ function paint()
     if game_won then
         displayVictoryMessage()
         return
+    elseif game_over then
+        displayGameOverMessage()
+        return
     else
         drawBreakoutBlocks()
         ball:draw()
         paddle:draw()
+
+        GAME_ENGINE:SetFont(LIVES_FONT)
+        GAME_ENGINE:DrawString("lives: " .. lives, 10, 10)
+        GAME_ENGINE:DrawString("score: " .. score, 10, 20)
     end
 end
 
 function soundsTick()
-    --paddleSound:Tick()
-    --wallSound:Tick()
-    --breakBlockSound:Tick()
+    paddleSound:Tick()
+    wallSound:Tick()
+    breakBlockSound:Tick()
 end
 
 function tick()
@@ -333,11 +338,14 @@ function tick()
     ball:move(elapsed_time)
     ball:check_collision_with_blocks()
 
-    --soundsTick()
+    soundsTick()
 end
 
 function key_pressed(key)
     if key == string.byte("R") then
+        hardResetGame()
+    end
+    if key == "R" then
         hardResetGame()
     end
 end

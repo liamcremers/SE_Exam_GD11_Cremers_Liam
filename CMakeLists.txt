@@ -35,7 +35,7 @@ set(GAME_FILES
         src/Game.h
 )
 
-file(GLOB LUA_FILES lua/*.lua)
+file(GLOB LUA_FILES Lua/*.lua)
 
 set(RESOURCE_FILES
         src/paddle.mp3

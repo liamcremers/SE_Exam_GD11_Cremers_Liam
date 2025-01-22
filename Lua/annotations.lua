@@ -317,24 +317,32 @@ function Audio:GetVolume() end
 ---@return string The type/format of the audio file.
 function Audio:GetType() end
 
----@enum HitRegionShape
----@field Ellipse number
----@field Rectangle number
-HitRegionShape = {
-    Ellipse = 0,
-    Rectangle = 1
-}
-
 ---@class HitRegion
 HitRegion = {}
 
----@param shape HitRegionShape
+---@enum Shape
+---@field ELLIPSE number
+---@field RECTANGLE number
+Shape = {
+    ELLIPSE = 1,
+    RECTANGLE = 2
+}
+
+---@param shape Shape
 ---@param left number
 ---@param top number
 ---@param right number
 ---@param bottom number
 ---@return HitRegion
-function HitRegion.new(shape, left, top, right, bottom) end
+function HitRegion.new(shape, left, top, right, bottom)
+    local self = setmetatable({}, { __index = HitRegion })
+    self.shape = shape
+    self.left = left
+    self.top = top
+    self.right = right
+    self.bottom = bottom
+    return self
+end
 
 ---@param dx number
 ---@param dy number
