@@ -14,7 +14,7 @@ This project is an exam assignment for the Game Development / Software Engineeri
 - Lua scripts resemble the structure of the C++ Game Engine, with functions like `Initialize`, `GameStart`, `GameEnd`, `Tick`, and `Paint`.
 - Annotations make sure that I could maintain typesafety during my lua coding journey.
 
-## Games Included
+# Games Included
 ### Snake
 - **Controls**:
   - Arrow Keys: Move the snake in the respective direction.
