@@ -12,7 +12,7 @@ This project is an exam assignment for the Game Development / Software Engineeri
 
 ### Lua Scripts
 - Lua scripts resemble the structure of the C++ Game Engine, with functions like `Initialize`, `GameStart`, `GameEnd`, `Tick`, and `Paint`.
-- Annotations make sure that I could maintain typesafety during my lua coding journey
+- Annotations make sure that I could maintain typesafety during my lua coding journey.
 
 ## Games Included
 ### Snake
@@ -32,25 +32,27 @@ This project is an exam assignment for the Game Development / Software Engineeri
 - A zipped package with the following structure:
   - `SE_Exam_GD11_Cremers_Liam.rar`
   - **Contents**:
-  - `Game`: Release build, Lua scripts, and all dependencies/resources.
-  - `Project` Project folder (includes project source files)
-    - `src`: Source files and project structure.
     - `Game`: Release build, Lua scripts, and all dependencies/resources.
-    - `Lua`: Lua files are kept in a seperate folder
-    - `cmake`: Cmake files to enhance the clarity of my CMakeLists.txt
-    - `NOTE`: i used the following source_groups/filters ('Visual Studio' specific)
-      - `Engine Files`: Here are the files used in Kevin's Engine except for Game.cpp and Game.h
-        - `Source Files`: Source Files included with Kevin's Engine
-      - `Game Files`: Game.h & Game.cpp
-        - `Lua`: All Lua-files found in Lua folder in Project
-      - `Resource Files`: Resources used specifically for the game
+    - `Project`: Project folder (includes project source files)
+      - `src`: Source files and project structure.
+      - `Game`: Release build, Lua scripts, and all dependencies/resources.
+      - `Lua`: Lua files are kept in a separate folder.
+      - `cmake`: CMake files to enhance the clarity of the CMakeLists.txt.
+      - `NOTE`: The following source_groups/filters are used ('Visual Studio' specific):
+        - `Engine Files`: Files used in Kevin's Engine except for Game.cpp and Game.h
+          - `Source Files`: Source files included with Kevin's Engine.
+        - `Game Files`: Game.h & Game.cpp
+          - `Lua`: All Lua files found in the Lua folder in the Project.
+        - `Resource Files`: Resources used specifically for the game.
 
 ## How to Run
 1. Unzip the provided package.
-2. Navigate to the `Game Folder`.
+2. Navigate to the `Game` folder.
 3. Run the executable to launch the default game.
 4. (Optional) Use the drag-and-drop system to load other Lua scripts if available.
 
 ## Notes
 - Focus is placed on clean, maintainable code in both C++ and Lua, with extensibility and performance optimization considered.
 - EmmyLua annotations are provided to enhance usability when editing Lua scripts.
+- Ensure you have the necessary dependencies installed, such as the Lua runtime and any required libraries.
+- The project is built using the Ninja generator for CMake, ensuring fast and efficient builds.
