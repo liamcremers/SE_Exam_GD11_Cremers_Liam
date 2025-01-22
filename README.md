@@ -1,18 +1,32 @@
 # Game Engine Lua Integration Project
 
 ## Overview
-This project is an exam assignment for the Game Development / Software Engineering course (2024-2025). The main goal is to integrate Lua bindings into a Win32 Game Engine using SOL2, allowing full control of the Game Engine through Lua scripting. The project is managed using CMake and demonstrates the Lua bindings by creating a simple 2D game.
+This project is an exam assignment for the Game Development / Software Engineering course (2024-2025). The main goal is to integrate Lua bindings into a Win32 Game Engine using SOL2, allowing full control of the Game Engine through Lua scripting. The project is managed using CMake and demonstrates the Lua bindings by creating simple 2D games.
 
 ## Features
 - **Lua Bindings**: Exposed as much functionality of the Game Engine as possible to Lua, enabling game logic to be written entirely in Lua.
 - **CMake Integration**: The Game Engine project is configured using CMake for streamlined project generation and builds.
-- **2D Game in Lua**: Includes a simple 2D game implemented in Lua to demonstrate the engine's capabilities and Lua bindings. The game logic is cleanly separated into Lua scripts.
+- **2D Games in Lua**: Includes simple 2D games implemented in Lua to demonstrate the engine's capabilities and Lua bindings. The game logic is cleanly separated into Lua scripts.
 - **Drag-and-Drop System**: Allows loading of Lua scripts dynamically for additional games, if available.
 - **Annotations**: EmmyLua annotations are added for all classes and functions exposed to Lua, improving code readability and auto-completion support in IDEs.
 
 ### Lua Scripts
 - Lua scripts resemble the structure of the C++ Game Engine, with functions like `Initialize`, `GameStart`, `GameEnd`, `Tick`, and `Paint`.
 - Annotations make sure that I could maintain typesafety during my lua coding journey
+
+## Games Included
+### Snake
+- **Controls**:
+  - Arrow Keys: Move the snake in the respective direction.
+  - R: Restart the game.
+- **Objective**: Eat the apples to grow the snake and avoid colliding with the walls or the snake's own body.
+
+### Breakout
+- **Controls**:
+  - Left Arrow: Move the paddle left.
+  - Right Arrow: Move the paddle right.
+  - R: Restart the game.
+- **Objective**: Break all the blocks by bouncing the ball off the paddle without letting the ball fall off the screen.
 
 ## Deliverables
 - A zipped package with the following structure:
