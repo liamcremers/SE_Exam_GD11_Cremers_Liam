@@ -24,7 +24,7 @@ This project is an exam assignment for the Game Development / Software Engineeri
     - `Game`: Release build, Lua scripts, and all dependencies/resources.
     - `Lua`: Lua files are kept in a seperate folder
     - `cmake`: Cmake files to enhance the clarity of my CMakeLists.txt
-    - `NOTE`: in my cmake is used the following source_groups to keep a good looking structure in 'Visual Studio' specific
+    - `NOTE`: i used the following source_groups/filters ('Visual Studio' specific)
       - `Engine Files`: Here are the files used in Kevin's Engine except for Game.cpp and Game.h
         - `Source Files`: Source Files included with Kevin's Engine
       - `Game Files`: Game.h & Game.cpp
