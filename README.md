@@ -29,7 +29,7 @@ This project is an exam assignment for the Game Development / Software Engineeri
         - `Source Files`: Source Files included with Kevin's Engine
       - `Game Files`: Game.h & Game.cpp
         - `Lua`: All Lua-files found in Lua folder in Project
-      -`Resource Files`: Resources used specifically for the game
+      - `Resource Files`: Resources used specifically for the game
 
 ## How to Run
 1. Unzip the provided package.
