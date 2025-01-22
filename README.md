@@ -10,21 +10,17 @@ This project is an exam assignment for the Game Development / Software Engineeri
 - **Drag-and-Drop System**: Allows loading of Lua scripts dynamically for additional games, if available.
 - **Annotations**: EmmyLua annotations are added for all classes and functions exposed to Lua, improving code readability and auto-completion support in IDEs.
 
-## Structure
-### Root Folder
-- `Project Folder`: Contains all the project source files, organized logically. Does not include unnecessary or redundant files.
-- `Game Folder`: Includes the release build of the project and all necessary scripts and resources to run the game out-of-the-box.
-
 ### Lua Scripts
 - Lua scripts resemble the structure of the C++ Game Engine, with functions like `Initialize`, `GameStart`, `GameEnd`, `Tick`, and `Paint`.
-- Game logic is modular and spans multiple Lua files for better maintainability.
+- Annotations make sure that I could maintain typesafety during my lua coding journey
 
 ## Deliverables
 - A zipped package with the following structure:
-  - `SE_Exam_class_last-name_first-name.rar` or `.zip`
+  - `SE_Exam_GD11_Cremers_Liam.rar`
   - **Contents**:
-    - `Project Folder`: Source files and project structure.
-    - `Game Folder`: Release build, Lua scripts, and all dependencies/resources.
+    - `src`: Source files and project structure.
+    - `Game`: Release build, Lua scripts, and all dependencies/resources.
+    - `cmake`: Cmake files to enhance the clarity of my CMakeLists.txt
 
 ## How to Run
 1. Unzip the provided package.
@@ -33,18 +29,5 @@ This project is an exam assignment for the Game Development / Software Engineeri
 4. (Optional) Use the drag-and-drop system to load other Lua scripts if available.
 
 ## Notes
-- Ensure that the package is copied to a fresh folder to verify its functionality. Dependencies and resources are included to ensure it runs out-of-the-box.
 - Focus is placed on clean, maintainable code in both C++ and Lua, with extensibility and performance optimization considered.
 - EmmyLua annotations are provided to enhance usability when editing Lua scripts.
-
-## Grading Focus
-1. **CMake Setup**: Proper configuration and logical project structure.
-2. **Lua Bindings**: Quality, scope, and ease of extensibility.
-3. **Code Quality**: Maintainability and readability of both C++ and Lua code.
-4. **Game Complexity**: Creativity and logic in the Lua game.
-5. **Polish**: Testing to ensure the project runs smoothly and dependencies are handled correctly.
-
-## Recommendations
-- Start with bindings required for the Lua game and expand gradually.
-- Consider simple games like Snake, Breakout, or Tetris, or implement a creative game idea for higher grading potential.
-- Test thoroughly to ensure smooth out-of-the-box execution.
